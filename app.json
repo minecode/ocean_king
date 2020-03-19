@@ -1,0 +1,31 @@
+{
+	"expo": {
+		"name": "Ocean king",
+		"slug": "ocean_king",
+		"privacy": "public",
+		"sdkVersion": "36.0.0",
+		"platforms": ["ios", "android", "web"],
+		"version": "1.0.0",
+		"orientation": "portrait",
+		"icon": "./assets/ocean_king.png",
+		"splash": {
+			"image": "./assets/ocean_king.png",
+			"resizeMode": "contain",
+			"backgroundColor": "#212121"
+		},
+		"updates": {
+			"fallbackToCacheTimeout": 0
+		},
+		"assetBundlePatterns": ["**/*"],
+		"ios": {
+			"supportsTablet": true
+		},
+		"android": {
+			"package": "pt.fhenriques.ocean_king",
+			"versionCode": 1,
+			"config": {
+				"googleMobileAdsAppId": "ca-app-pub-7606799175531903~8839387470"
+			}
+		}
+	}
+}
