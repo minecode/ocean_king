@@ -365,6 +365,96 @@ export default function GameScreen(props) {
 				/>
 			)}
 
+			{Platform.OS !== 'web' && (
+				<Modal
+					isVisible={loading}
+					coverScreen={false}
+					backdropColor={'#212121'}
+					backdropOpacity={0.8}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}>
+						<ActivityIndicator size='large' color='#526b78' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</Modal>
+			)}
+			{Platform.OS !== 'web' && (
+				<Modal
+					isVisible={displayWinner !== null}
+					coverScreen={true}
+					backdropColor={'#212121'}
+					backdropOpacity={0.8}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}>
+						<Text style={{ color: '#f1f1f1', fontSize: 25 }}>
+							{' '}
+							Turn winner: {displayWinner}
+						</Text>
+					</View>
+				</Modal>
+			)}
+			{Platform.OS !== 'web' && (
+				<Modal
+					isVisible={choiceVisible}
+					coverScreen={true}
+					backdropColor={'#212121'}
+					backdropOpacity={0.8}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'space-around'
+						}}>
+						<TouchableOpacity
+							onPress={async () => {
+								setCurrentPlayer(null);
+								setChoiceVisible(false);
+								setTempCard(null);
+								await playCard(
+									{ color: tempCard.color, value: 'f' },
+									game
+								);
+								setCards(null);
+							}}>
+							<Image
+								source={require('../../assets/cards/f.png')}
+								style={{ width: 50, height: 50 }}
+								placeholderStyle={{
+									backgroundColor: 'transparent'
+								}}
+							/>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={async () => {
+								setCurrentPlayer(null);
+								setChoiceVisible(false);
+								setTempCard(null);
+								await playCard(
+									{ color: tempCard.color, value: 'p' },
+									game
+								);
+								setCards(null);
+							}}>
+							<Image
+								source={require('../../assets/cards/p.png')}
+								style={{ width: 50, height: 50 }}
+								placeholderStyle={{
+									backgroundColor: 'transparent'
+								}}
+							/>
+						</TouchableOpacity>
+					</View>
+				</Modal>
+			)}
+
 			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 				{gameState && gameState === 'in queue' && (
 					<View style={styles.container}>
@@ -374,8 +464,7 @@ export default function GameScreen(props) {
 									fontSize: 30,
 									fontWeight: 'bold',
 									color: '#f1f1f1'
-								}}
-							>
+								}}>
 								Players
 							</Text>
 						</View>
@@ -399,8 +488,7 @@ export default function GameScreen(props) {
 										marginTop: 20,
 										justifyContent: 'center'
 									}
-								]}
-							>
+								]}>
 								<TouchableOpacity
 									style={{
 										backgroundColor: '#27496d',
@@ -420,8 +508,7 @@ export default function GameScreen(props) {
 									}}
 									onPress={async () => {
 										await startGame();
-									}}
-								>
+									}}>
 									<Icon
 										name='play'
 										color={'white'}
@@ -433,8 +520,7 @@ export default function GameScreen(props) {
 											color: 'white',
 											margin: 5,
 											fontWeight: 'bold'
-										}}
-									>
+										}}>
 										Start game
 									</Text>
 								</TouchableOpacity>
@@ -447,8 +533,7 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									justifyContent: 'center'
 								}
-							]}
-						>
+							]}>
 							<TouchableOpacity
 								style={{
 									backgroundColor: '#a72121',
@@ -468,8 +553,7 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}
-							>
+								}}>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -481,8 +565,7 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}
-								>
+									}}>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -497,8 +580,7 @@ export default function GameScreen(props) {
 									fontSize: 25,
 									fontWeight: 'bold',
 									color: '#f1f1f1'
-								}}
-							>
+								}}>
 								Waiting for other players...
 							</Text>
 						</View>
@@ -509,8 +591,7 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									justifyContent: 'center'
 								}
-							]}
-						>
+							]}>
 							<TouchableOpacity
 								style={{
 									backgroundColor: '#a72121',
@@ -530,8 +611,7 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}
-							>
+								}}>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -543,8 +623,7 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}
-								>
+									}}>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -556,8 +635,7 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									marginBottom: 20
 								}
-							]}
-						>
+							]}>
 							<ScrollView
 								horizontal={true}
 								showsHorizontalScrollIndicator={false}
@@ -574,16 +652,14 @@ export default function GameScreen(props) {
 								contentContainerStyle={{
 									flexGrow: 1,
 									justifyContent: 'center'
-								}}
-							>
+								}}>
 								{cards &&
 									cards.length !== 0 &&
 									cards.map((v, i) => {
 										return (
 											<View
 												key={i}
-												style={{ marginHorizontal: 5 }}
-											>
+												style={{ marginHorizontal: 5 }}>
 												<Card
 													color={v.color}
 													value={v.value}
@@ -604,8 +680,7 @@ export default function GameScreen(props) {
 								marginVertical: 0,
 								justifyContent: 'space-between'
 							}
-						]}
-					>
+						]}>
 						<View
 							style={[
 								{
@@ -615,8 +690,7 @@ export default function GameScreen(props) {
 									flex: 1,
 									marginBottom: 20
 								}
-							]}
-						>
+							]}>
 							<View style={styles.row}>
 								<Text
 									style={{
@@ -624,8 +698,7 @@ export default function GameScreen(props) {
 										fontWeight: 'bold',
 										color: '#f1f1f1',
 										marginHorizontal: 10
-									}}
-								>
+									}}>
 									Place your bet
 								</Text>
 								<TouchableOpacity
@@ -646,8 +719,7 @@ export default function GameScreen(props) {
 									}}
 									onPress={async () => {
 										await leaveGame();
-									}}
-								>
+									}}>
 									<Icon
 										name='sign-out'
 										color={'white'}
@@ -659,8 +731,7 @@ export default function GameScreen(props) {
 											color: 'white',
 											margin: 5,
 											fontWeight: 'bold'
-										}}
-									>
+										}}>
 										Leave game
 									</Text>
 								</TouchableOpacity>
@@ -674,8 +745,7 @@ export default function GameScreen(props) {
 													fontSize: 25,
 													fontWeight: 'bold',
 													color: '#f1f1f1'
-												}}
-											>
+												}}>
 												{pont.player.name}:{' '}
 												{pont.points}
 											</Text>
@@ -699,14 +769,12 @@ export default function GameScreen(props) {
 												}}
 												onPress={async () => {
 													await placeBet(i);
-												}}
-											>
+												}}>
 												<Text
 													style={{
 														color: '#f1f1f1',
 														fontSize: 20
-													}}
-												>
+													}}>
 													{parseInt(i)}
 												</Text>
 											</TouchableOpacity>
@@ -721,8 +789,7 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									marginBottom: 20
 								}
-							]}
-						>
+							]}>
 							<ScrollView
 								horizontal={true}
 								showsHorizontalScrollIndicator={false}
@@ -739,16 +806,14 @@ export default function GameScreen(props) {
 								contentContainerStyle={{
 									flexGrow: 1,
 									justifyContent: 'center'
-								}}
-							>
+								}}>
 								{cards &&
 									cards.length !== 0 &&
 									cards.map((v, i) => {
 										return (
 											<View
 												key={i}
-												style={{ marginHorizontal: 5 }}
-											>
+												style={{ marginHorizontal: 5 }}>
 												<Card
 													color={v.color}
 													value={v.value}
@@ -769,8 +834,7 @@ export default function GameScreen(props) {
 								marginVertical: 0,
 								justifyContent: 'space-between'
 							}
-						]}
-					>
+						]}>
 						<View style={styles.row}>
 							<Text
 								style={{
@@ -778,8 +842,7 @@ export default function GameScreen(props) {
 									fontWeight: 'bold',
 									color: '#f1f1f1',
 									marginHorizontal: 10
-								}}
-							>
+								}}>
 								In game
 							</Text>
 							<TouchableOpacity
@@ -800,8 +863,7 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}
-							>
+								}}>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -813,8 +875,7 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}
-								>
+									}}>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -827,8 +888,7 @@ export default function GameScreen(props) {
 									flexWrap: 'wrap',
 									margin: 0
 								}
-							]}
-						>
+							]}>
 							{betsState &&
 								tempResults &&
 								betsState.map((bet, i) => {
@@ -839,8 +899,7 @@ export default function GameScreen(props) {
 											style={{
 												alignItems: 'center',
 												margin: 2
-											}}
-										>
+											}}>
 											<Text
 												style={{
 													fontSize: 15,
@@ -850,8 +909,7 @@ export default function GameScreen(props) {
 														currentPlayer
 															? '#21b121'
 															: '#f1f1f1'
-												}}
-											>
+												}}>
 												{bet.player.name}{' '}
 												{tempResults[bet.player._id]}/
 												{bet.value}
@@ -903,8 +961,7 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									marginBottom: 20
 								}
-							]}
-						>
+							]}>
 							<ScrollView
 								horizontal={true}
 								showsHorizontalScrollIndicator={false}
@@ -921,16 +978,14 @@ export default function GameScreen(props) {
 								contentContainerStyle={{
 									flexGrow: 1,
 									justifyContent: 'center'
-								}}
-							>
+								}}>
 								{cards &&
 									cards.length !== 0 &&
 									cards.map((v, i) => {
 										return (
 											<View
 												key={i}
-												style={{ marginHorizontal: 5 }}
-											>
+												style={{ marginHorizontal: 5 }}>
 												<TouchableOpacity
 													onPress={async () => {
 														if (
@@ -968,8 +1023,7 @@ export default function GameScreen(props) {
 																setCards(null);
 															}
 														}
-													}}
-												>
+													}}>
 													<Card
 														color={v.color}
 														value={v.value}
@@ -995,8 +1049,7 @@ export default function GameScreen(props) {
 										fontSize: 25,
 										fontWeight: 'bold',
 										color: '#f1f1f1'
-									}}
-								>
+									}}>
 									Waiting for pontuations...
 								</Text>
 							</View>
@@ -1010,8 +1063,7 @@ export default function GameScreen(props) {
 												fontSize: 25,
 												fontWeight: 'bold',
 												color: '#f1f1f1'
-											}}
-										>
+											}}>
 											{pont.player.name}: {pont.points}
 										</Text>
 									</View>
@@ -1024,8 +1076,7 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									justifyContent: 'center'
 								}
-							]}
-						>
+							]}>
 							<TouchableOpacity
 								style={{
 									backgroundColor: '#a72121',
@@ -1044,8 +1095,7 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}
-							>
+								}}>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -1057,8 +1107,7 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}
-								>
+									}}>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -1066,7 +1115,7 @@ export default function GameScreen(props) {
 					</View>
 				)}
 			</ScrollView>
-			{loading && (
+			{Platform.OS === 'web' && loading && (
 				<View
 					style={[
 						{
@@ -1077,21 +1126,19 @@ export default function GameScreen(props) {
 							justifyContent: 'center',
 							backgroundColor: '#21212180'
 						}
-					]}
-				>
+					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'center'
-						}}
-					>
+						}}>
 						<ActivityIndicator size='large' color='#526b78' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 					</View>
 				</View>
 			)}
-			{displayWinner !== null && (
+			{Platform.OS === 'web' && displayWinner !== null && (
 				<View
 					style={[
 						{
@@ -1102,15 +1149,13 @@ export default function GameScreen(props) {
 							justifyContent: 'center',
 							backgroundColor: '#21212180'
 						}
-					]}
-				>
+					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'center'
-						}}
-					>
+						}}>
 						<Text style={{ color: '#f1f1f1', fontSize: 25 }}>
 							{' '}
 							Turn winner: {displayWinner}
@@ -1119,7 +1164,7 @@ export default function GameScreen(props) {
 				</View>
 			)}
 
-			{choiceVisible && (
+			{Platform.OS === 'web' && choiceVisible && (
 				<View
 					style={[
 						{
@@ -1130,15 +1175,13 @@ export default function GameScreen(props) {
 							justifyContent: 'center',
 							backgroundColor: '#21212180'
 						}
-					]}
-				>
+					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'space-around'
-						}}
-					>
+						}}>
 						<TouchableOpacity
 							onPress={async () => {
 								setCurrentPlayer(null);
@@ -1149,8 +1192,7 @@ export default function GameScreen(props) {
 									game
 								);
 								setCards(null);
-							}}
-						>
+							}}>
 							<Image
 								source={require('../../assets/cards/f.png')}
 								style={{ width: 50, height: 50 }}
@@ -1169,8 +1211,7 @@ export default function GameScreen(props) {
 									game
 								);
 								setCards(null);
-							}}
-						>
+							}}>
 							<Image
 								source={require('../../assets/cards/p.png')}
 								style={{ width: 50, height: 50 }}

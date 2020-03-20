@@ -121,6 +121,23 @@ export default function HomeScreen(props) {
 					bannerSize={'smartBannerLandscape'}
 				/>
 			)}
+			{Platform.OS !== 'web' && (
+				<Modal
+					isVisible={loading}
+					coverScreen={false}
+					backdropColor={'#212121'}
+					backdropOpacity={0.8}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}>
+						<ActivityIndicator size='large' color='#f1f1f1' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</Modal>
+			)}
 
 			<View style={styles.container}>
 				<View style={[styles.row, { justifyContent: 'center' }]}>
@@ -136,8 +153,10 @@ export default function HomeScreen(props) {
 					/>
 				</View>
 				<View
-					style={[styles.row, { marginHorizontal: 0, marginTop: 20 }]}
-				>
+					style={[
+						styles.row,
+						{ marginHorizontal: 0, marginTop: 20 }
+					]}>
 					<TouchableOpacity
 						style={{
 							backgroundColor: '#142850',
@@ -157,8 +176,7 @@ export default function HomeScreen(props) {
 						}}
 						onPress={async () => {
 							await newGame();
-						}}
-					>
+						}}>
 						<Icon
 							name='gamepad'
 							color={'white'}
@@ -170,8 +188,7 @@ export default function HomeScreen(props) {
 								color: 'white',
 								margin: 5,
 								fontWeight: 'bold'
-							}}
-						>
+							}}>
 							New game
 						</Text>
 					</TouchableOpacity>
@@ -194,8 +211,7 @@ export default function HomeScreen(props) {
 						}}
 						onPress={() => {
 							navigate('Join');
-						}}
-					>
+						}}>
 						<Icon
 							name='server'
 							color={'white'}
@@ -207,8 +223,7 @@ export default function HomeScreen(props) {
 								color: 'white',
 								margin: 5,
 								fontWeight: 'bold'
-							}}
-						>
+							}}>
 							Join game
 						</Text>
 					</TouchableOpacity>
@@ -221,8 +236,7 @@ export default function HomeScreen(props) {
 							marginTop: 20,
 							justifyContent: 'center'
 						}
-					]}
-				>
+					]}>
 					<TouchableOpacity
 						style={{
 							backgroundColor: '#142850',
@@ -257,8 +271,7 @@ export default function HomeScreen(props) {
 								index: 1,
 								routes: [{ name: 'Login' }]
 							});
-						}}
-					>
+						}}>
 						<Icon
 							name='sign-out'
 							color={'white'}
@@ -270,8 +283,7 @@ export default function HomeScreen(props) {
 								color: 'white',
 								margin: 5,
 								fontWeight: 'bold'
-							}}
-						>
+							}}>
 							Logout
 						</Text>
 					</TouchableOpacity>
@@ -280,8 +292,7 @@ export default function HomeScreen(props) {
 					<TouchableOpacity
 						onPress={() => {
 							Linking.openURL('https://github.com/fabiohfab');
-						}}
-					>
+						}}>
 						<Text style={{ color: '#f1f1f1' }}>
 							Created by Fábio Henriques
 						</Text>
@@ -289,7 +300,7 @@ export default function HomeScreen(props) {
 				</View>
 			</View>
 
-			{loading && (
+			{Platform.OS === 'web' && loading && (
 				<View
 					style={[
 						{
@@ -300,15 +311,13 @@ export default function HomeScreen(props) {
 							justifyContent: 'center',
 							backgroundColor: '#21212180'
 						}
-					]}
-				>
+					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'center'
-						}}
-					>
+						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 					</View>

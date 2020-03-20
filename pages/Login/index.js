@@ -101,6 +101,24 @@ export default function LoginScreen(props) {
 				/>
 			)}
 
+			{Platform.OS !== 'web' && (
+				<Modal
+					isVisible={loading}
+					coverScreen={false}
+					backdropColor={'#212121'}
+					backdropOpacity={0.8}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}>
+						<ActivityIndicator size='large' color='#f1f1f1' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</Modal>
+			)}
+
 			<View style={styles.container}>
 				<View style={[styles.row, { justifyContent: 'center' }]}>
 					<Image
@@ -120,8 +138,7 @@ export default function LoginScreen(props) {
 								justifyContent: 'center',
 								alignItems: 'center'
 							}
-						]}
-					>
+						]}>
 						<Text style={{ color: 'red', textAlign: 'center' }}>
 							{loginError}
 						</Text>
@@ -131,15 +148,13 @@ export default function LoginScreen(props) {
 					style={[
 						styles.row,
 						{ justifyContent: 'center', marginVertical: 20 }
-					]}
-				>
+					]}>
 					<Text
 						style={{
 							fontSize: 30,
 							fontWeight: 'bold',
 							color: '#f1f1f1'
-						}}
-					>
+						}}>
 						Login
 					</Text>
 				</View>
@@ -167,8 +182,10 @@ export default function LoginScreen(props) {
 					/>
 				</View>
 				<View
-					style={[styles.row, { marginHorizontal: 0, marginTop: 20 }]}
-				>
+					style={[
+						styles.row,
+						{ marginHorizontal: 0, marginTop: 20 }
+					]}>
 					<TouchableOpacity
 						style={{
 							backgroundColor: '#142850',
@@ -188,8 +205,7 @@ export default function LoginScreen(props) {
 						}}
 						onPress={async () => {
 							login();
-						}}
-					>
+						}}>
 						<Icon
 							name='sign-in'
 							color={'white'}
@@ -201,8 +217,7 @@ export default function LoginScreen(props) {
 								color: 'white',
 								margin: 5,
 								fontWeight: 'bold'
-							}}
-						>
+							}}>
 							Sign in
 						</Text>
 					</TouchableOpacity>
@@ -225,8 +240,7 @@ export default function LoginScreen(props) {
 						}}
 						onPress={() => {
 							navigate('Register');
-						}}
-					>
+						}}>
 						<Icon
 							name='address-book'
 							color={'white'}
@@ -238,8 +252,7 @@ export default function LoginScreen(props) {
 								color: 'white',
 								margin: 5,
 								fontWeight: 'bold'
-							}}
-						>
+							}}>
 							Sign up
 						</Text>
 					</TouchableOpacity>
@@ -248,15 +261,14 @@ export default function LoginScreen(props) {
 					<TouchableOpacity
 						onPress={() => {
 							Linking.openURL('https://github.com/fabiohfab');
-						}}
-					>
+						}}>
 						<Text style={{ color: '#f1f1f1' }}>
 							Created by Fábio Henriques
 						</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
-			{loading && (
+			{Platform.OS === 'web' && loading && (
 				<View
 					style={[
 						{
@@ -267,15 +279,13 @@ export default function LoginScreen(props) {
 							justifyContent: 'center',
 							backgroundColor: '#21212180'
 						}
-					]}
-				>
+					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'center'
-						}}
-					>
+						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 					</View>

@@ -126,14 +126,31 @@ export default function JoinScreen(props) {
 				bannerSize={'smartBannerLandscape'}
 			/>} */}
 
+			{Platform.OS !== 'web' && (
+				<Modal
+					isVisible={loading}
+					coverScreen={false}
+					backdropColor={'#212121'}
+					backdropOpacity={0.8}>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}>
+						<ActivityIndicator size='large' color='#f1f1f1' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</Modal>
+			)}
+
 			<ScrollView
 				refreshControl={
 					<RefreshControl
 						refreshing={loading}
 						onRefresh={onRefresh}
 					/>
-				}
-			>
+				}>
 				<View
 					style={[
 						styles.container,
@@ -141,16 +158,14 @@ export default function JoinScreen(props) {
 							justifyContent: 'flex-start',
 							marginTop: 0
 						}
-					]}
-				>
+					]}>
 					<View style={styles.row}>
 						<Text
 							style={{
 								fontSize: 30,
 								fontWeight: 'bold',
 								color: '#f1f1f1'
-							}}
-						>
+							}}>
 							Games
 						</Text>
 					</View>
@@ -163,8 +178,7 @@ export default function JoinScreen(props) {
 										style={{
 											fontSize: 20,
 											color: '#f1f1f1'
-										}}
-									>
+										}}>
 										{g.createdBy.name}
 									</Text>
 									<TouchableOpacity
@@ -188,8 +202,7 @@ export default function JoinScreen(props) {
 										}}
 										onPress={async () => {
 											await joinGame(g._id);
-										}}
-									>
+										}}>
 										<Icon
 											name='sign-out'
 											color={'white'}
@@ -202,8 +215,7 @@ export default function JoinScreen(props) {
 												color: 'white',
 												margin: 10,
 												fontWeight: 'bold'
-											}}
-										>
+											}}>
 											Join game
 										</Text>
 									</TouchableOpacity>
@@ -212,7 +224,7 @@ export default function JoinScreen(props) {
 						})}
 				</View>
 			</ScrollView>
-			{loading && (
+			{Platform.OS === 'web' && loading && (
 				<View
 					style={[
 						{
@@ -223,15 +235,13 @@ export default function JoinScreen(props) {
 							justifyContent: 'center',
 							backgroundColor: '#21212180'
 						}
-					]}
-				>
+					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
 							justifyContent: 'center'
-						}}
-					>
+						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 					</View>
