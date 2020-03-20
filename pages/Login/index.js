@@ -48,6 +48,7 @@ export default function LoginScreen(props) {
 			})
 			.catch(error => {
 				setLoading(false);
+				console.log(error);
 				setLoginError('Authentication fail');
 			});
 	}

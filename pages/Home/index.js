@@ -37,6 +37,12 @@ export default function HomeScreen(props) {
 		}
 	}
 
+	const onRefresh = () => {
+		setRefreshing(true);
+		getPurchases();
+		setRefreshing(false);
+	};
+
 	useEffect(() => {
 		setTestDeviceIDAsync('EMULATOR');
 		getUser();
@@ -112,6 +118,7 @@ export default function HomeScreen(props) {
 					<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 				</View>
 			</Modal>
+
 			<View style={styles.container}>
 				<View style={[styles.row, { justifyContent: 'center' }]}>
 					<Image
@@ -120,7 +127,9 @@ export default function HomeScreen(props) {
 							width: 100,
 							height: 100
 						}}
-						placeholderStyle={{ backgroundColor: 'transparent' }}
+						placeholderStyle={{
+							backgroundColor: 'transparent'
+						}}
 					/>
 				</View>
 				<View
@@ -230,7 +239,10 @@ export default function HomeScreen(props) {
 							await AsyncStorage.removeItem(
 								'@ocean_king:username'
 							);
-							reset({ index: 1, routes: [{ name: 'Login' }] });
+							reset({
+								index: 1,
+								routes: [{ name: 'Login' }]
+							});
 						}}>
 						<Icon
 							name='sign-out'

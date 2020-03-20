@@ -5,7 +5,10 @@ import {
 	ActivityIndicator,
 	Text,
 	Dimensions,
-	AsyncStorage
+	AsyncStorage,
+	RefreshControl,
+	ScrollView,
+	AppState
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -59,9 +62,24 @@ export default function JoinScreen(props) {
 		setTestDeviceIDAsync('EMULATOR');
 	}, []);
 
+	const handleChange = newState => {
+		if (newState === 'active') {
+			console.log('!');
+			console.log(user, username);
+			if (user != null && username != null) {
+				getGames();
+			}
+		}
+	};
+
 	useEffect(() => {
 		if (user != null && username != null) {
 			getGames();
+			AppState.addEventListener('change', handleChange);
+
+			return () => {
+				AppState.removeEventListener('change', handleChange);
+			};
 		}
 	}, [user, username]);
 
@@ -76,18 +94,26 @@ export default function JoinScreen(props) {
 				}
 			})
 			.catch(error => {
+				console.log(error);
 				setLoading(false);
 			});
 	}
 
+	const onRefresh = () => {
+		if (user != null && username != null) {
+			getGames();
+		}
+	};
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			<AdMobBanner
+			{/* <AdMobBanner
 				bannerSize='fullBanner'
 				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
 				servePersonalizedAds // true or false
 				bannerSize={'smartBannerLandscape'}
-			/>
+			/> */}
+
 			<Modal
 				isVisible={loading}
 				coverScreen={false}
@@ -103,65 +129,86 @@ export default function JoinScreen(props) {
 					<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 				</View>
 			</Modal>
-			<View style={[styles.container, { justifyContent: 'flex-start' }]}>
-				<View style={styles.row}>
-					<Text
-						style={{
-							fontSize: 30,
-							fontWeight: 'bold',
-							color: '#f1f1f1'
-						}}>
-						Games
-					</Text>
-				</View>
-				{games &&
-					games.length !== 0 &&
-					games.map((g, i) => {
-						return (
-							<View style={styles.row} key={i}>
-								<Text
-									style={{ fontSize: 20, color: '#f1f1f1' }}>
-									{g.createdBy.name}
-								</Text>
-								<TouchableOpacity
-									style={{
-										backgroundColor: '#217721',
-										height: 30,
-										borderRadius: 25,
-										marginLeft: 10,
-										marginRight: 5,
-										marginVertical: 10,
-										alignItems: 'center',
-										justifyContent: 'center',
-										shadowOffset: { width: 0, height: 1 },
-										shadowOpacity: 0.8,
-										shadowRadius: 2,
-										elevation: 5,
-										flexDirection: 'row'
-									}}
-									onPress={async () => {
-										await joinGame(g._id);
-									}}>
-									<Icon
-										name='sign-out'
-										color={'white'}
-										type='font-awesome'
-										iconStyle={{ marginLeft: 10 }}
-										size={15}
-									/>
+			<ScrollView
+				refreshControl={
+					<RefreshControl
+						refreshing={loading}
+						onRefresh={onRefresh}
+					/>
+				}>
+				<View
+					style={[
+						styles.container,
+						{
+							justifyContent: 'flex-start',
+							marginTop: 0
+						}
+					]}>
+					<View style={styles.row}>
+						<Text
+							style={{
+								fontSize: 30,
+								fontWeight: 'bold',
+								color: '#f1f1f1'
+							}}>
+							Games
+						</Text>
+					</View>
+					{games &&
+						games.length !== 0 &&
+						games.map((g, i) => {
+							return (
+								<View style={styles.row} key={i}>
 									<Text
 										style={{
-											color: 'white',
-											margin: 10,
-											fontWeight: 'bold'
+											fontSize: 20,
+											color: '#f1f1f1'
 										}}>
-										Join game
+										{g.createdBy.name}
 									</Text>
-								</TouchableOpacity>
-							</View>
-						);
-					})}
-			</View>
+									<TouchableOpacity
+										style={{
+											backgroundColor: '#217721',
+											height: 30,
+											borderRadius: 25,
+											marginLeft: 10,
+											marginRight: 5,
+											marginVertical: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											shadowOffset: {
+												width: 0,
+												height: 1
+											},
+											shadowOpacity: 0.8,
+											shadowRadius: 2,
+											elevation: 5,
+											flexDirection: 'row'
+										}}
+										onPress={async () => {
+											await joinGame(g._id);
+										}}>
+										<Icon
+											name='sign-out'
+											color={'white'}
+											type='font-awesome'
+											iconStyle={{ marginLeft: 10 }}
+											size={15}
+										/>
+										<Text
+											style={{
+												color: 'white',
+												margin: 10,
+												fontWeight: 'bold'
+											}}>
+											Join game
+										</Text>
+									</TouchableOpacity>
+								</View>
+							);
+						})}
+				</View>
+			</ScrollView>
 		</SafeAreaView>
 	);
 }

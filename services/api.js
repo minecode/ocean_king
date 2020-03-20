@@ -2,6 +2,7 @@ import { create } from 'apisauce';
 
 const api = create({
 	baseURL: 'https://skull-king-game.herokuapp.com/'
+	// baseURL: 'http://192.168.1.68:3000/'
 });
 
 api.addAsyncResponseTransform(async response => {

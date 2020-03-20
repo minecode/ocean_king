@@ -72,12 +72,12 @@ export default function LoginScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			<AdMobBanner
+			{/* <AdMobBanner
 				bannerSize='fullBanner'
 				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
 				servePersonalizedAds // true or false
 				bannerSize={'smartBannerLandscape'}
-			/>
+			/> */}
 			<Modal
 				isVisible={loading}
 				coverScreen={false}
@@ -93,13 +93,13 @@ export default function LoginScreen(props) {
 					<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 				</View>
 			</Modal>
-			<View style={styles.container}>
+			<View style={[styles.container, { marginTop: 0 }]}>
 				<View style={[styles.row, { justifyContent: 'center' }]}>
 					<Image
 						source={require('../../assets/ocean_king.png')}
 						style={{
-							width: 250,
-							height: 300
+							width: 100,
+							height: 100
 						}}
 						placeholderStyle={{ backgroundColor: 'transparent' }}
 					/>

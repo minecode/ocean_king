@@ -7,7 +7,8 @@ import {
 	Dimensions,
 	AsyncStorage,
 	ScrollView,
-	ImageBackground
+	ImageBackground,
+	AppState
 } from 'react-native';
 import Modal from 'react-native-modal';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -55,9 +56,31 @@ export default function GameScreen(props) {
 	}
 
 	useEffect(() => {
-		setTestDeviceIDAsync('EMULATOR');
 		getUser();
+		setTestDeviceIDAsync('EMULATOR');
 	}, []);
+
+	const handleChange = newState => {
+		if (newState === 'active') {
+			if (user != null && username != null) {
+				getGamePlayers(props.route.params.game);
+				getGame(props.route.params.game);
+
+				if (gameState !== 'in queue') {
+					if (gameState === 'place bets') {
+						getPontuations(props.route.params.game);
+						getPlayerCards(props.route.params.game);
+					} else if (gameState === 'in game') {
+						getPlayerStatus(props.route.params.game);
+						getCurrentPlayer(props.route.params.game);
+						getPlayerCards(props.route.params.game);
+					} else if (gameState === 'finished') {
+						getPontuations(props.route.params.game);
+					}
+				}
+			}
+		}
+	};
 
 	useEffect(() => {
 		if (!cards && tempCards) {
@@ -68,12 +91,12 @@ export default function GameScreen(props) {
 	}, [cards]);
 
 	useEffect(() => {
-		if (!betsState && tempBetsState) {
+		if (!betsState && tempBetsState && tempResults) {
 			let temp3 = tempBetsState;
 			setTempBetsState(null);
 			setBetsState(temp3);
 		}
-	}, [betsState]);
+	}, [betsState, tempBetsState, tempResults]);
 
 	useEffect(() => {
 		if (gameState) {
@@ -89,6 +112,7 @@ export default function GameScreen(props) {
 
 	useEffect(() => {
 		if (user != null && username != null) {
+			// const socket = io('http://192.168.1.68:3000');
 			const socket = io('https://skull-king-game.herokuapp.com');
 			store.dispatch({
 				type: 'SET_SOCKET',
@@ -166,6 +190,12 @@ export default function GameScreen(props) {
 
 			socket.emit('set nickname', username);
 			socket.emit('join room', props.route.params.game, user);
+
+			AppState.addEventListener('change', handleChange);
+
+			return () => {
+				AppState.removeEventListener('change', handleChange);
+			};
 		}
 	}, [user, username]);
 
@@ -202,8 +232,8 @@ export default function GameScreen(props) {
 	async function getPlayerStatus(current_game) {
 		await get('/game/playersStatus', { game: current_game })
 			.then(response => {
-				setBetsState(response.data.bet.reverse());
-				setTempBetsState(response.data.bet.reverse());
+				setBetsState(response.data.bet);
+				setTempBetsState(response.data.bet);
 				setBetsState(null);
 				setPlayedCardsState(response.data.played_cards);
 				setTempResults(response.data.temp_results);
@@ -851,14 +881,12 @@ export default function GameScreen(props) {
 													color:
 														bet.player._id ===
 														currentPlayer
-															? 'yellow'
+															? '#21b121'
 															: '#f1f1f1'
 												}}>
-												{bet.player.name} {bet.value}/
-												{tempResults[bet.player._id] &&
-													tempResults[bet.player._id]}
-												{!tempResults[bet.player._id] &&
-													0}
+												{bet.player.name}{' '}
+												{tempResults[bet.player._id]}/
+												{bet.value}
 											</Text>
 											{playedCardsState &&
 												playedCardsState.map(

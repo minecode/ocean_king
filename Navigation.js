@@ -27,7 +27,9 @@ function StackNavigator() {
 				name='Join'
 				component={JoinScreen}
 				options={{
-					headerStyle: { backgroundColor: '#212121' },
+					headerStyle: {
+						backgroundColor: '#212121'
+					},
 					headerTitleStyle: { color: 'white' },
 					title: 'Join game'
 				}}
@@ -51,7 +53,9 @@ function StackNavigator() {
 				name='Register'
 				component={RegisterScreen}
 				options={{
-					headerStyle: { backgroundColor: '#212121' },
+					headerStyle: {
+						backgroundColor: '#212121'
+					},
 					headerTitleStyle: { color: 'white' },
 					title: 'Register'
 				}}
