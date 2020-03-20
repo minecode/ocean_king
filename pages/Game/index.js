@@ -5,12 +5,17 @@ import {
 	ActivityIndicator,
 	Text,
 	Dimensions,
-	AsyncStorage,
 	ScrollView,
 	ImageBackground,
-	AppState
+	AppState,
+	Platform
 } from 'react-native';
-import Modal from 'react-native-modal';
+let AsyncStorage = null;
+let Modal = null;
+if (Platform.OS !== 'web') {
+	AsyncStorage = require('react-native').AsyncStorage;
+	Modal = require('react-native-modal');
+}
 import { SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
 import { SocialIcon, Input, Icon } from 'react-native-elements';
@@ -45,8 +50,16 @@ export default function GameScreen(props) {
 	const [choiceVisible, setChoiceVisible] = useState(false);
 
 	async function getUser() {
-		let user = await AsyncStorage.getItem('@ocean_king:user', null);
-		let name = await AsyncStorage.getItem('@ocean_king:username', null);
+		let user = null;
+		let name = null;
+		if (Platform.OS !== 'web') {
+			user = await AsyncStorage.getItem('@ocean_king:user', null);
+			name = await AsyncStorage.getItem('@ocean_king:username', null);
+		} else {
+			user = localStorage.getItem('@ocean_king:user', null);
+			name = localStorage.getItem('@ocean_king:username', null);
+		}
+
 		if (user != null) {
 			setUser(user);
 			setUsername(name);
@@ -57,7 +70,9 @@ export default function GameScreen(props) {
 
 	useEffect(() => {
 		getUser();
-		setTestDeviceIDAsync('EMULATOR');
+		if (Platform.OS !== 'web') {
+			setTestDeviceIDAsync('EMULATOR');
+		}
 	}, []);
 
 	const handleChange = newState => {
@@ -181,6 +196,7 @@ export default function GameScreen(props) {
 			});
 			socket.on('game finished', function() {
 				console.log('game finished');
+				setDisplayWinner(null);
 				setGameState('finished');
 				getPontuations(props.route.params.game);
 			});
@@ -340,95 +356,15 @@ export default function GameScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			<AdMobBanner
-				bannerSize='fullBanner'
-				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
-				servePersonalizedAds // true or false
-				bannerSize={'smartBannerLandscape'}
-			/>
-			<Modal
-				isVisible={loading}
-				coverScreen={false}
-				backdropColor={'#212121'}
-				backdropOpacity={0.8}>
-				<View
-					style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center'
-					}}>
-					<ActivityIndicator size='large' color='#526b78' />
-					<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
-				</View>
-			</Modal>
-			<Modal
-				isVisible={displayWinner !== null}
-				coverScreen={true}
-				backdropColor={'#212121'}
-				backdropOpacity={0.8}>
-				<View
-					style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center'
-					}}>
-					<Text style={{ color: '#f1f1f1', fontSize: 25 }}>
-						{' '}
-						Turn winner: {displayWinner}
-					</Text>
-				</View>
-			</Modal>
-			<Modal
-				isVisible={choiceVisible}
-				coverScreen={true}
-				backdropColor={'#212121'}
-				backdropOpacity={0.8}>
-				<View
-					style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'space-around'
-					}}>
-					<TouchableOpacity
-						onPress={async () => {
-							setCurrentPlayer(null);
-							setChoiceVisible(false);
-							setTempCard(null);
-							await playCard(
-								{ color: tempCard.color, value: 'f' },
-								game
-							);
-							setCards(null);
-						}}>
-						<Image
-							source={require('../../assets/cards/f.png')}
-							style={{ width: 50, height: 50 }}
-							placeholderStyle={{
-								backgroundColor: 'transparent'
-							}}
-						/>
-					</TouchableOpacity>
-					<TouchableOpacity
-						onPress={async () => {
-							setCurrentPlayer(null);
-							setChoiceVisible(false);
-							setTempCard(null);
-							await playCard(
-								{ color: tempCard.color, value: 'p' },
-								game
-							);
-							setCards(null);
-						}}>
-						<Image
-							source={require('../../assets/cards/p.png')}
-							style={{ width: 50, height: 50 }}
-							placeholderStyle={{
-								backgroundColor: 'transparent'
-							}}
-						/>
-					</TouchableOpacity>
-				</View>
-			</Modal>
+			{Platform.OS !== 'web' && (
+				<AdMobBanner
+					bannerSize='fullBanner'
+					adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
+					servePersonalizedAds // true or false
+					bannerSize={'smartBannerLandscape'}
+				/>
+			)}
+
 			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 				{gameState && gameState === 'in queue' && (
 					<View style={styles.container}>
@@ -438,7 +374,8 @@ export default function GameScreen(props) {
 									fontSize: 30,
 									fontWeight: 'bold',
 									color: '#f1f1f1'
-								}}>
+								}}
+							>
 								Players
 							</Text>
 						</View>
@@ -462,7 +399,8 @@ export default function GameScreen(props) {
 										marginTop: 20,
 										justifyContent: 'center'
 									}
-								]}>
+								]}
+							>
 								<TouchableOpacity
 									style={{
 										backgroundColor: '#27496d',
@@ -482,7 +420,8 @@ export default function GameScreen(props) {
 									}}
 									onPress={async () => {
 										await startGame();
-									}}>
+									}}
+								>
 									<Icon
 										name='play'
 										color={'white'}
@@ -494,7 +433,8 @@ export default function GameScreen(props) {
 											color: 'white',
 											margin: 5,
 											fontWeight: 'bold'
-										}}>
+										}}
+									>
 										Start game
 									</Text>
 								</TouchableOpacity>
@@ -507,7 +447,8 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									justifyContent: 'center'
 								}
-							]}>
+							]}
+						>
 							<TouchableOpacity
 								style={{
 									backgroundColor: '#a72121',
@@ -527,7 +468,8 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}>
+								}}
+							>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -539,7 +481,8 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}>
+									}}
+								>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -554,7 +497,8 @@ export default function GameScreen(props) {
 									fontSize: 25,
 									fontWeight: 'bold',
 									color: '#f1f1f1'
-								}}>
+								}}
+							>
 								Waiting for other players...
 							</Text>
 						</View>
@@ -565,7 +509,8 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									justifyContent: 'center'
 								}
-							]}>
+							]}
+						>
 							<TouchableOpacity
 								style={{
 									backgroundColor: '#a72121',
@@ -585,7 +530,8 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}>
+								}}
+							>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -597,7 +543,8 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}>
+									}}
+								>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -609,7 +556,8 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									marginBottom: 20
 								}
-							]}>
+							]}
+						>
 							<ScrollView
 								horizontal={true}
 								showsHorizontalScrollIndicator={false}
@@ -626,14 +574,16 @@ export default function GameScreen(props) {
 								contentContainerStyle={{
 									flexGrow: 1,
 									justifyContent: 'center'
-								}}>
+								}}
+							>
 								{cards &&
 									cards.length !== 0 &&
 									cards.map((v, i) => {
 										return (
 											<View
 												key={i}
-												style={{ marginHorizontal: 5 }}>
+												style={{ marginHorizontal: 5 }}
+											>
 												<Card
 													color={v.color}
 													value={v.value}
@@ -654,7 +604,8 @@ export default function GameScreen(props) {
 								marginVertical: 0,
 								justifyContent: 'space-between'
 							}
-						]}>
+						]}
+					>
 						<View
 							style={[
 								{
@@ -664,7 +615,8 @@ export default function GameScreen(props) {
 									flex: 1,
 									marginBottom: 20
 								}
-							]}>
+							]}
+						>
 							<View style={styles.row}>
 								<Text
 									style={{
@@ -672,7 +624,8 @@ export default function GameScreen(props) {
 										fontWeight: 'bold',
 										color: '#f1f1f1',
 										marginHorizontal: 10
-									}}>
+									}}
+								>
 									Place your bet
 								</Text>
 								<TouchableOpacity
@@ -693,7 +646,8 @@ export default function GameScreen(props) {
 									}}
 									onPress={async () => {
 										await leaveGame();
-									}}>
+									}}
+								>
 									<Icon
 										name='sign-out'
 										color={'white'}
@@ -705,7 +659,8 @@ export default function GameScreen(props) {
 											color: 'white',
 											margin: 5,
 											fontWeight: 'bold'
-										}}>
+										}}
+									>
 										Leave game
 									</Text>
 								</TouchableOpacity>
@@ -719,7 +674,8 @@ export default function GameScreen(props) {
 													fontSize: 25,
 													fontWeight: 'bold',
 													color: '#f1f1f1'
-												}}>
+												}}
+											>
 												{pont.player.name}:{' '}
 												{pont.points}
 											</Text>
@@ -743,12 +699,14 @@ export default function GameScreen(props) {
 												}}
 												onPress={async () => {
 													await placeBet(i);
-												}}>
+												}}
+											>
 												<Text
 													style={{
 														color: '#f1f1f1',
 														fontSize: 20
-													}}>
+													}}
+												>
 													{parseInt(i)}
 												</Text>
 											</TouchableOpacity>
@@ -763,7 +721,8 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									marginBottom: 20
 								}
-							]}>
+							]}
+						>
 							<ScrollView
 								horizontal={true}
 								showsHorizontalScrollIndicator={false}
@@ -780,14 +739,16 @@ export default function GameScreen(props) {
 								contentContainerStyle={{
 									flexGrow: 1,
 									justifyContent: 'center'
-								}}>
+								}}
+							>
 								{cards &&
 									cards.length !== 0 &&
 									cards.map((v, i) => {
 										return (
 											<View
 												key={i}
-												style={{ marginHorizontal: 5 }}>
+												style={{ marginHorizontal: 5 }}
+											>
 												<Card
 													color={v.color}
 													value={v.value}
@@ -808,7 +769,8 @@ export default function GameScreen(props) {
 								marginVertical: 0,
 								justifyContent: 'space-between'
 							}
-						]}>
+						]}
+					>
 						<View style={styles.row}>
 							<Text
 								style={{
@@ -816,7 +778,8 @@ export default function GameScreen(props) {
 									fontWeight: 'bold',
 									color: '#f1f1f1',
 									marginHorizontal: 10
-								}}>
+								}}
+							>
 								In game
 							</Text>
 							<TouchableOpacity
@@ -837,7 +800,8 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}>
+								}}
+							>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -849,7 +813,8 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}>
+									}}
+								>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -862,7 +827,8 @@ export default function GameScreen(props) {
 									flexWrap: 'wrap',
 									margin: 0
 								}
-							]}>
+							]}
+						>
 							{betsState &&
 								tempResults &&
 								betsState.map((bet, i) => {
@@ -873,7 +839,8 @@ export default function GameScreen(props) {
 											style={{
 												alignItems: 'center',
 												margin: 2
-											}}>
+											}}
+										>
 											<Text
 												style={{
 													fontSize: 15,
@@ -883,7 +850,8 @@ export default function GameScreen(props) {
 														currentPlayer
 															? '#21b121'
 															: '#f1f1f1'
-												}}>
+												}}
+											>
 												{bet.player.name}{' '}
 												{tempResults[bet.player._id]}/
 												{bet.value}
@@ -935,7 +903,8 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									marginBottom: 20
 								}
-							]}>
+							]}
+						>
 							<ScrollView
 								horizontal={true}
 								showsHorizontalScrollIndicator={false}
@@ -952,14 +921,16 @@ export default function GameScreen(props) {
 								contentContainerStyle={{
 									flexGrow: 1,
 									justifyContent: 'center'
-								}}>
+								}}
+							>
 								{cards &&
 									cards.length !== 0 &&
 									cards.map((v, i) => {
 										return (
 											<View
 												key={i}
-												style={{ marginHorizontal: 5 }}>
+												style={{ marginHorizontal: 5 }}
+											>
 												<TouchableOpacity
 													onPress={async () => {
 														if (
@@ -997,7 +968,8 @@ export default function GameScreen(props) {
 																setCards(null);
 															}
 														}
-													}}>
+													}}
+												>
 													<Card
 														color={v.color}
 														value={v.value}
@@ -1023,7 +995,8 @@ export default function GameScreen(props) {
 										fontSize: 25,
 										fontWeight: 'bold',
 										color: '#f1f1f1'
-									}}>
+									}}
+								>
 									Waiting for pontuations...
 								</Text>
 							</View>
@@ -1037,7 +1010,8 @@ export default function GameScreen(props) {
 												fontSize: 25,
 												fontWeight: 'bold',
 												color: '#f1f1f1'
-											}}>
+											}}
+										>
 											{pont.player.name}: {pont.points}
 										</Text>
 									</View>
@@ -1050,7 +1024,8 @@ export default function GameScreen(props) {
 									marginHorizontal: 0,
 									justifyContent: 'center'
 								}
-							]}>
+							]}
+						>
 							<TouchableOpacity
 								style={{
 									backgroundColor: '#a72121',
@@ -1069,7 +1044,8 @@ export default function GameScreen(props) {
 								}}
 								onPress={async () => {
 									await leaveGame();
-								}}>
+								}}
+							>
 								<Icon
 									name='sign-out'
 									color={'white'}
@@ -1081,7 +1057,8 @@ export default function GameScreen(props) {
 										color: 'white',
 										margin: 5,
 										fontWeight: 'bold'
-									}}>
+									}}
+								>
 									Leave game
 								</Text>
 							</TouchableOpacity>
@@ -1089,6 +1066,122 @@ export default function GameScreen(props) {
 					</View>
 				)}
 			</ScrollView>
+			{loading && (
+				<View
+					style={[
+						{
+							width: '100%',
+							height: '100%',
+							position: 'absolute',
+							alignContent: 'center',
+							justifyContent: 'center',
+							backgroundColor: '#21212180'
+						}
+					]}
+				>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
+					>
+						<ActivityIndicator size='large' color='#526b78' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</View>
+			)}
+			{displayWinner !== null && (
+				<View
+					style={[
+						{
+							width: '100%',
+							height: '100%',
+							position: 'absolute',
+							alignContent: 'center',
+							justifyContent: 'center',
+							backgroundColor: '#21212180'
+						}
+					]}
+				>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
+					>
+						<Text style={{ color: '#f1f1f1', fontSize: 25 }}>
+							{' '}
+							Turn winner: {displayWinner}
+						</Text>
+					</View>
+				</View>
+			)}
+
+			{choiceVisible && (
+				<View
+					style={[
+						{
+							width: '100%',
+							height: '100%',
+							position: 'absolute',
+							alignContent: 'center',
+							justifyContent: 'center',
+							backgroundColor: '#21212180'
+						}
+					]}
+				>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'space-around'
+						}}
+					>
+						<TouchableOpacity
+							onPress={async () => {
+								setCurrentPlayer(null);
+								setChoiceVisible(false);
+								setTempCard(null);
+								await playCard(
+									{ color: tempCard.color, value: 'f' },
+									game
+								);
+								setCards(null);
+							}}
+						>
+							<Image
+								source={require('../../assets/cards/f.png')}
+								style={{ width: 50, height: 50 }}
+								placeholderStyle={{
+									backgroundColor: 'transparent'
+								}}
+							/>
+						</TouchableOpacity>
+						<TouchableOpacity
+							onPress={async () => {
+								setCurrentPlayer(null);
+								setChoiceVisible(false);
+								setTempCard(null);
+								await playCard(
+									{ color: tempCard.color, value: 'p' },
+									game
+								);
+								setCards(null);
+							}}
+						>
+							<Image
+								source={require('../../assets/cards/p.png')}
+								style={{ width: 50, height: 50 }}
+								placeholderStyle={{
+									backgroundColor: 'transparent'
+								}}
+							/>
+						</TouchableOpacity>
+					</View>
+				</View>
+			)}
 		</SafeAreaView>
 	);
 }

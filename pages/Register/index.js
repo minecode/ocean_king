@@ -3,15 +3,18 @@ import {
 	View,
 	TouchableOpacity,
 	Text,
-	AsyncStorage,
 	Dimensions,
-	ActivityIndicator
+	ActivityIndicator,
+	Platform
 } from 'react-native';
+if (Platform.OS !== 'web') {
+	const AsyncStorage = require('react-native').AsyncStorage;
+	const Modal = require('react-native-modal');
+}
 import styles from '../../style';
 import { SocialIcon, Input, Icon } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { post, get, put, remove } from '../../services/api';
-import Modal from 'react-native-modal';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
 
@@ -42,14 +45,26 @@ export default function LoginScreen(props) {
 		})
 			.then(async response => {
 				setLoading(false);
-				await AsyncStorage.setItem(
-					'@ocean_king:user',
-					response.data.user._id
-				);
-				await AsyncStorage.setItem(
-					'@ocean_king:username',
-					response.data.user.name
-				);
+				if (Platform.OS !== 'web') {
+					await AsyncStorage.setItem(
+						'@ocean_king:user',
+						response.data.user._id
+					);
+					await AsyncStorage.setItem(
+						'@ocean_king:username',
+						response.data.user.name
+					);
+				} else {
+					localStorage.setItem(
+						'@ocean_king:user',
+						response.data.user._id
+					);
+					localStorage.setItem(
+						'@ocean_king:username',
+						response.data.user.name
+					);
+				}
+
 				reset({ index: 1, routes: [{ name: 'Home' }] });
 			})
 			.catch(error => {
@@ -66,33 +81,21 @@ export default function LoginScreen(props) {
 	}
 
 	useEffect(() => {
-		setTestDeviceIDAsync('EMULATOR');
+		if (Platform.OS !== 'web') {
+			setTestDeviceIDAsync('EMULATOR');
+		}
 		getUser();
 	}, []);
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			{/* <AdMobBanner
+			{/* {Platform.OS !== 'web' && <AdMobBanner
 				bannerSize='fullBanner'
 				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
 				servePersonalizedAds // true or false
 				bannerSize={'smartBannerLandscape'}
-			/> */}
-			<Modal
-				isVisible={loading}
-				coverScreen={false}
-				backdropColor={'#212121'}
-				backdropOpacity={0.8}>
-				<View
-					style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center'
-					}}>
-					<ActivityIndicator size='large' color='#f1f1f1' />
-					<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
-				</View>
-			</Modal>
+			/>} */}
+
 			<View style={[styles.container, { marginTop: 0 }]}>
 				<View style={[styles.row, { justifyContent: 'center' }]}>
 					<Image
@@ -112,7 +115,8 @@ export default function LoginScreen(props) {
 								justifyContent: 'center',
 								alignItems: 'center'
 							}
-						]}>
+						]}
+					>
 						<Text style={{ color: 'red', textAlign: 'center' }}>
 							{loginError}
 						</Text>
@@ -122,13 +126,15 @@ export default function LoginScreen(props) {
 					style={[
 						styles.row,
 						{ justifyContent: 'center', marginVertical: 20 }
-					]}>
+					]}
+				>
 					<Text
 						style={{
 							fontSize: 30,
 							fontWeight: 'bold',
 							color: '#f1f1f1'
-						}}>
+						}}
+					>
 						Register
 					</Text>
 				</View>
@@ -174,7 +180,8 @@ export default function LoginScreen(props) {
 							marginTop: 20,
 							justifyContent: 'center'
 						}
-					]}>
+					]}
+				>
 					<TouchableOpacity
 						style={{
 							backgroundColor: '#27496d',
@@ -192,7 +199,8 @@ export default function LoginScreen(props) {
 						}}
 						onPress={async () => {
 							await register();
-						}}>
+						}}
+					>
 						<Icon
 							name='address-book'
 							color={'white'}
@@ -204,12 +212,38 @@ export default function LoginScreen(props) {
 								color: 'white',
 								margin: 5,
 								fontWeight: 'bold'
-							}}>
+							}}
+						>
 							Sign up
 						</Text>
 					</TouchableOpacity>
 				</View>
 			</View>
+			{loading && (
+				<View
+					style={[
+						{
+							width: '100%',
+							height: '100%',
+							position: 'absolute',
+							alignContent: 'center',
+							justifyContent: 'center',
+							backgroundColor: '#21212180'
+						}
+					]}
+				>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
+					>
+						<ActivityIndicator size='large' color='#f1f1f1' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</View>
+			)}
 		</SafeAreaView>
 	);
 }

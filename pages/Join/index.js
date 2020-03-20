@@ -5,12 +5,15 @@ import {
 	ActivityIndicator,
 	Text,
 	Dimensions,
-	AsyncStorage,
 	RefreshControl,
 	ScrollView,
-	AppState
+	AppState,
+	Platform
 } from 'react-native';
-import Modal from 'react-native-modal';
+if (Platform.OS !== 'web') {
+	const AsyncStorage = require('react-native').AsyncStorage;
+	const Modal = require('react-native-modal');
+}
 import { SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
 import { SocialIcon, Input, Icon } from 'react-native-elements';
@@ -28,8 +31,15 @@ export default function JoinScreen(props) {
 	const { navigate, reset } = props.navigation;
 
 	async function getUser() {
-		let user = await AsyncStorage.getItem('@ocean_king:user', null);
-		let name = await AsyncStorage.getItem('@ocean_king:username', null);
+		let user = null;
+		let name = null;
+		if (Platform.OS !== 'web') {
+			user = await AsyncStorage.getItem('@ocean_king:user', null);
+			name = await AsyncStorage.getItem('@ocean_king:username', null);
+		} else {
+			user = localStorage.getItem('@ocean_king:user', null);
+			name = localStorage.getItem('@ocean_king:username', null);
+		}
 		if (user != null) {
 			setUser(user);
 			setUsername(name);
@@ -59,7 +69,9 @@ export default function JoinScreen(props) {
 
 	useEffect(() => {
 		getUser();
-		setTestDeviceIDAsync('EMULATOR');
+		if (Platform.OS !== 'web') {
+			setTestDeviceIDAsync('EMULATOR');
+		}
 	}, []);
 
 	const handleChange = newState => {
@@ -107,35 +119,21 @@ export default function JoinScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			{/* <AdMobBanner
+			{/* {Platform.OS !== 'web' && <AdMobBanner
 				bannerSize='fullBanner'
 				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
 				servePersonalizedAds // true or false
 				bannerSize={'smartBannerLandscape'}
-			/> */}
+			/>} */}
 
-			<Modal
-				isVisible={loading}
-				coverScreen={false}
-				backdropColor={'#212121'}
-				backdropOpacity={0.8}>
-				<View
-					style={{
-						flexDirection: 'row',
-						alignItems: 'center',
-						justifyContent: 'center'
-					}}>
-					<ActivityIndicator size='large' color='#f1f1f1' />
-					<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
-				</View>
-			</Modal>
 			<ScrollView
 				refreshControl={
 					<RefreshControl
 						refreshing={loading}
 						onRefresh={onRefresh}
 					/>
-				}>
+				}
+			>
 				<View
 					style={[
 						styles.container,
@@ -143,14 +141,16 @@ export default function JoinScreen(props) {
 							justifyContent: 'flex-start',
 							marginTop: 0
 						}
-					]}>
+					]}
+				>
 					<View style={styles.row}>
 						<Text
 							style={{
 								fontSize: 30,
 								fontWeight: 'bold',
 								color: '#f1f1f1'
-							}}>
+							}}
+						>
 							Games
 						</Text>
 					</View>
@@ -163,7 +163,8 @@ export default function JoinScreen(props) {
 										style={{
 											fontSize: 20,
 											color: '#f1f1f1'
-										}}>
+										}}
+									>
 										{g.createdBy.name}
 									</Text>
 									<TouchableOpacity
@@ -187,7 +188,8 @@ export default function JoinScreen(props) {
 										}}
 										onPress={async () => {
 											await joinGame(g._id);
-										}}>
+										}}
+									>
 										<Icon
 											name='sign-out'
 											color={'white'}
@@ -200,7 +202,8 @@ export default function JoinScreen(props) {
 												color: 'white',
 												margin: 10,
 												fontWeight: 'bold'
-											}}>
+											}}
+										>
 											Join game
 										</Text>
 									</TouchableOpacity>
@@ -209,6 +212,31 @@ export default function JoinScreen(props) {
 						})}
 				</View>
 			</ScrollView>
+			{loading && (
+				<View
+					style={[
+						{
+							width: '100%',
+							height: '100%',
+							position: 'absolute',
+							alignContent: 'center',
+							justifyContent: 'center',
+							backgroundColor: '#21212180'
+						}
+					]}
+				>
+					<View
+						style={{
+							flexDirection: 'row',
+							alignItems: 'center',
+							justifyContent: 'center'
+						}}
+					>
+						<ActivityIndicator size='large' color='#f1f1f1' />
+						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+					</View>
+				</View>
+			)}
 		</SafeAreaView>
 	);
 }
