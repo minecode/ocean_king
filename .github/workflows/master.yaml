@@ -36,6 +36,7 @@ jobs:
                   expo-version: 3.x
             - run: yarn install --frozen-lockfile
             - run: expo web:build
+            - run: rm -rf node_modules/gh-pages/.cache
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
               with:
