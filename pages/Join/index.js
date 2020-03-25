@@ -17,12 +17,10 @@ if (Platform.OS !== 'web') {
 	Modal = require('react-native-modal').default;
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
-import io from 'socket.io-client';
-import { SocialIcon, Input, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import styles from '../../style';
-import { post, get, put, remove } from '../../services/api';
-import store from '../../store';
-import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
+import { post, get } from '../../services/api';
+import { setTestDeviceIDAsync } from 'expo-ads-admob';
 
 export default function JoinScreen(props) {
 	const { height, width } = Dimensions.get('window');

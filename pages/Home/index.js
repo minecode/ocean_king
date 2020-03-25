@@ -20,14 +20,13 @@ if (Platform.OS !== 'web') {
 	GoogleLogout = require('react-google-login').GoogleLogout;
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
-import io from 'socket.io-client';
-import { SocialIcon, Input, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import styles from '../../style';
-import { post, get, put, remove } from '../../services/api';
-import store from '../../store';
+import { post, get } from '../../services/api';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
 import * as GoogleSignIn from 'expo-google-sign-in';
+import { ANDROIDCLIENTIDWEB, ADMOBUNITID } from 'react-native-dotenv';
 
 export default function HomeScreen(props) {
 	const [loading, setLoading] = useState(false);
@@ -134,7 +133,7 @@ export default function HomeScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
+					adUnitID={ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>

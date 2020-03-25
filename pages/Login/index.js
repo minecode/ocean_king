@@ -14,7 +14,6 @@ let AdSense = null;
 let GoogleLogin = null;
 let GoogleLogout = null;
 import {
-	GOOGLE_SIGNIN_APIKEY,
 	ANDROIDCLIENTID,
 	ANDROIDSTANDALONEAPPCLIENTID,
 	ANDROIDCLIENTIDWEB,
@@ -29,9 +28,9 @@ if (Platform.OS !== 'web') {
 	GoogleLogout = require('react-google-login').GoogleLogout;
 }
 import styles from '../../style';
-import { SocialIcon, Input, Icon } from 'react-native-elements';
+import { Input, Icon } from 'react-native-elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { post, get, put, remove } from '../../services/api';
+import { post } from '../../services/api';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
 import * as Google from 'expo-google-app-auth';

@@ -6,7 +6,6 @@ import {
 	Text,
 	Dimensions,
 	ScrollView,
-	ImageBackground,
 	AppState,
 	Platform
 } from 'react-native';
@@ -27,6 +26,7 @@ import { post, get } from '../../services/api';
 import Card from '../Components/Card';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
+import { ADMOBUNITID } from 'react-native-dotenv';
 
 export default function GameScreen(props) {
 	const { height, width } = Dimensions.get('window');
