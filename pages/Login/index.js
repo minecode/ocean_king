@@ -14,7 +14,7 @@ let AdSense = null;
 let GoogleLogin = null;
 let GoogleLogout = null;
 import {
-	APIKEY,
+	GOOGLE_SIGNIN_APIKEY,
 	ANDROIDCLIENTID,
 	ANDROIDSTANDALONEAPPCLIENTID,
 	ANDROIDCLIENTIDWEB,
@@ -309,13 +309,16 @@ export default function LoginScreen(props) {
 	}
 
 	useEffect(() => {
-		console.log(process.env.APIKEY);
+		console.log(process);
+		console.log(process.env);
+
+		console.log(process.env.GOOGLE_SIGNIN_APIKEY);
 		console.log(process.env.ANDROIDCLIENTID);
 		console.log(process.env.ANDROIDSTANDALONEAPPCLIENTID);
 		console.log(process.env.ANDROIDCLIENTIDWEB);
 		console.log(process.env.ADMOBUNITID);
 
-		console.log(APIKEY);
+		console.log(GOOGLE_SIGNIN_APIKEY);
 		console.log(ANDROIDCLIENTID);
 		console.log(ANDROIDSTANDALONEAPPCLIENTID);
 		console.log(ANDROIDCLIENTIDWEB);

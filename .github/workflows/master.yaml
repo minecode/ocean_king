@@ -31,6 +31,14 @@ jobs:
                   ANDROIDCLIENTIDWEB: ${{ secrets.ANDROIDCLIENTIDWEB }}
                   ANDROIDCLIENTID: ${{ secrets.ANDROIDCLIENTID }}
                   ADMOBUNITID: ${{ secrets.ADMOBUNITID }}
+            - name: Printenv
+              run: |
+                  echo "GOOGLE_SIGNIN_APIKEY=${GOOGLE_SIGNIN_APIKEY}"
+                  echo "ANDROIDSTANDALONEAPPCLIENTID=${ANDROIDSTANDALONEAPPCLIENTID}"
+                  echo "ANDROIDCLIENTIDWEB=${ANDROIDCLIENTIDWEB}"
+                  echo "ANDROIDCLIENTID=${ANDROIDCLIENTID}"
+                  echo "ADMOBUNITID=${ADMOBUNITID}"
+                  printenv
             - uses: expo/expo-github-action@v5
               with:
                   expo-version: 3.x
