@@ -31,10 +31,9 @@ jobs:
                   ANDROIDCLIENTIDWEB: ${{ secrets.ANDROIDCLIENTIDWEB }}
                   ANDROIDCLIENTID: ${{ secrets.ANDROIDCLIENTID }}
                   ADMOBUNITID: ${{ secrets.ADMOBUNITID }}
-            - name: Printenv
-              run: |
-                  echo "GOOGLE_SIGNIN_APIKEY=${GOOGLE_SIGNIN_APIKEY}"
-                  printenv
+            - uses: expo/expo-github-action@v5
+              with:
+                  expo-version: 3.x
             - run: yarn install --frozen-lockfile
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
