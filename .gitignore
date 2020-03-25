@@ -7,8 +7,10 @@ npm-debug.*
 *.key
 *.mobileprovision
 *.orig.*
+.keys
 web-build/
 web-report/
 
 # macOS
 .DS_Store
+/google-services.json

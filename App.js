@@ -21,9 +21,8 @@ function App() {
 	);
 }
 
-AppRegistry.registerComponent('App', () => App);
-
 if (Platform.OS === 'web') {
+	AppRegistry.registerComponent('App', () => App);
 	AppRegistry.runApplication('App', {
 		rootTag: document.getElementById('root')
 	});

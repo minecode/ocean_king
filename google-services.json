@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "366465896807",
+    "firebase_url": "https://ocean-king-512e5.firebaseio.com",
+    "project_id": "ocean-king-512e5",
+    "storage_bucket": "ocean-king-512e5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:366465896807:android:09e20a995e97b3aa229fc2",
+        "android_client_info": {
+          "package_name": "pt.fhenriques.ocean_king"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "366465896807-i11ji8l4humo742ro60b0o59l3tjqj05.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "pt.fhenriques.ocean_king",
+            "certificate_hash": "afb983abc42cd45849d12ed1ee6a6e49847d2fa6"
+          }
+        },
+        {
+          "client_id": "366465896807-5g36b2me9cjnua3b8lsv3vunevlsn1ne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAXyNFq_HCNbnJON7h9dIOAsN3fESjRAr8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "366465896807-5g36b2me9cjnua3b8lsv3vunevlsn1ne.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

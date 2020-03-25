@@ -1,6 +1,0 @@
-Keystore credentials
-Keystore password: 37d5e33f6bfa432eaf64ac99b41e3e4d
-Key alias:         QGZoZW5yaXF1ZXMvb2NlYW5fa2luZw==
-Key password:      c01c6b210ac04f1a805923eb732bc78e
-
-Path to Keystore:  C:\Users\fh97\Documents\Rep\skull_king\ocean_king.jks

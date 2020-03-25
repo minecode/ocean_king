@@ -12,16 +12,18 @@ import {
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
+let AdSense = null;
 if (Platform.OS !== 'web') {
 	AsyncStorage = require('react-native').AsyncStorage;
-	Modal = require('react-native-modal');
+	Modal = require('react-native-modal').default;
+} else {
+	AdSense = require('react-adsense').default;
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
-import { SocialIcon, Input, Icon } from 'react-native-elements';
+import { Icon } from 'react-native-elements';
 import styles from '../../style';
-import { post, get, put, remove } from '../../services/api';
-import store from '../../store';
+import { post, get } from '../../services/api';
 import Card from '../Components/Card';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
@@ -48,7 +50,8 @@ export default function GameScreen(props) {
 	const [playedCardsState, setPlayedCardsState] = useState(null);
 	const [tempCard, setTempCard] = useState(null);
 	const [choiceVisible, setChoiceVisible] = useState(false);
-
+	const [socket, setSocket] = useState(null);
+	const [room, setRoom] = useState(null);
 	async function getUser() {
 		let user = null;
 		let name = null;
@@ -76,24 +79,14 @@ export default function GameScreen(props) {
 	}, []);
 
 	const handleChange = newState => {
-		if (newState === 'active') {
-			if (user != null && username != null) {
-				getGamePlayers(props.route.params.game);
-				getGame(props.route.params.game);
-
-				if (gameState !== 'in queue') {
-					if (gameState === 'place bets') {
-						getPontuations(props.route.params.game);
-						getPlayerCards(props.route.params.game);
-					} else if (gameState === 'in game') {
-						getPlayerStatus(props.route.params.game);
-						getCurrentPlayer(props.route.params.game);
-						getPlayerCards(props.route.params.game);
-					} else if (gameState === 'finished') {
-						getPontuations(props.route.params.game);
-					}
-				}
+		console.log(newState);
+		if (socket !== null) {
+			if (user != null && username != null && room !== null) {
+				getGamePlayers(room);
 			}
+		} else {
+			setSocket(io('https://skull-king-game.herokuapp.com'));
+			setRoom(props.route.params.game);
 		}
 	};
 
@@ -114,67 +107,67 @@ export default function GameScreen(props) {
 	}, [betsState, tempBetsState, tempResults]);
 
 	useEffect(() => {
-		if (gameState) {
+		if (game && gameState && room) {
 			if (gameState === 'place bets') {
-				getPlayerCards(props.route.params.game);
-				getPontuations(props.route.params.game);
+				getPlayerCards(room);
+				getPontuations(room);
 			} else if (gameState === 'in game') {
-				getPlayerStatus(props.route.params.game);
-				getCurrentPlayer(props.route.params.game);
+				setAlreadyBet(false);
+				getPlayerCards(room);
+				getCurrentPlayer(room);
+				getPlayerStatus(room);
+			} else if (gameState === 'finished') {
+				getPontuations(room);
 			}
 		}
-	}, [gameState]);
+	}, [game, gameState]);
 
 	useEffect(() => {
-		if (user != null && username != null) {
-			// const socket = io('http://192.168.1.68:3000');
-			const socket = io('https://skull-king-game.herokuapp.com');
-			store.dispatch({
-				type: 'SET_SOCKET',
-				socket: socket,
-				room: props.route.params.game
-			});
+		if (players !== null && room !== null) {
+			getGame(room);
+		} else if (room === null) {
+			setRoom(props.route.params.game);
+		} else if (players === null) {
+			getGamePlayers(room);
+		}
+	}, [players]);
 
-			getGamePlayers(props.route.params.game);
-			getGame(props.route.params.game);
-
-			if (gameState !== 'in queue') {
-				getPlayerStatus(props.route.params.game);
-				getCurrentPlayer(props.route.params.game);
-				getPlayerCards(props.route.params.game);
-			}
-
+	useEffect(() => {
+		if (socket !== null && room !== null) {
+			getGamePlayers(room);
+			// getGame(room);
 			socket.on('user join', function(user) {
 				console.log(user + ' join your room');
-				getGamePlayers(props.route.params.game);
+				getGamePlayers(room);
 			});
 			socket.on('user leave', function(user) {
 				console.log(user + ' leave your room');
-				getGamePlayers(props.route.params.game);
+				getGamePlayers(room);
 			});
 			socket.on('place bets', function(max) {
-				setGameState('place bets');
-				console.log('geting...');
-				getPlayerCards(props.route.params.game);
 				setCurrentPlayer(null);
 				setMaxBets(max);
+				getGame(room);
+				console.log('place bets');
+				setDisplayWinner(null);
+				setCurrentPlayer(null);
+				// getPlayerCards(room);
 			});
 			socket.on('start round', function() {
-				setGameState('in game');
 				setCurrentPlayer(null);
-				getPlayerCards(props.route.params.game);
+				setGameState('in game');
 			});
 			socket.on('new turn', function(player) {
 				console.log('first play: ' + player.name);
-				getPlayerStatus(props.route.params.game);
-				setPlayedCardsState(null);
 				setDisplayWinner(null);
+				setPlayedCardsState(null);
 				setCurrentPlayer(player._id);
+				getPlayerStatus(room);
 			});
 			socket.on('next play', function(player) {
 				console.log('next play: ' + player.player.name);
-				getPlayerStatus(props.route.params.game);
 				setCurrentPlayer(player.player._id);
+				getPlayerStatus(room);
 			});
 			socket.on('turn winner', function(player) {
 				console.log('winner: ' + player.name);
@@ -187,25 +180,31 @@ export default function GameScreen(props) {
 				setDisplayWinner(null);
 				setCurrentPlayer(null);
 			});
-			socket.on('round finish', function() {
-				console.log('round finish');
-				getPontuations(props.route.params.game);
-				getGame(props.route.params.game);
+			socket.on('game finished', function() {
+				console.log('game finished');
+				setGameState('finished');
 				setDisplayWinner(null);
 				setCurrentPlayer(null);
 			});
-			socket.on('game finished', function() {
-				console.log('game finished');
-				setDisplayWinner(null);
-				setGameState('finished');
-				getPontuations(props.route.params.game);
-			});
 			socket.on('card played', function(card, user) {
-				getPlayerStatus(props.route.params.game);
+				getPlayerStatus(room);
 			});
 
 			socket.emit('set nickname', username);
-			socket.emit('join room', props.route.params.game, user);
+			socket.emit('join room', room, user);
+		} else if (socket === null) {
+			setSocket(io('https://skull-king-game.herokuapp.com'));
+			setRoom(props.route.params.game);
+		}
+	}, [socket, room]);
+
+	useEffect(() => {
+		if (user != null && username != null) {
+			if (socket === null) {
+				// setSocket(io('http://192.168.1.68:3000'));
+				setSocket(io('https://skull-king-game.herokuapp.com'));
+				setRoom(props.route.params.game);
+			}
 
 			AppState.addEventListener('change', handleChange);
 
@@ -288,15 +287,10 @@ export default function GameScreen(props) {
 		await post('/game/leave', { user: user })
 			.then(async response => {
 				setLoading(false);
-				store
-					.getState()
-					.socket.socket.emit(
-						'leave room',
-						store.getState().socket.room,
-						user
-					);
-				store.getState().socket.socket.emit('forceDisconnect');
-				store.dispatch({ type: 'REMOVE_SOCKET' });
+				socket.emit('leave room', room, user);
+				socket.emit('forceDisconnect');
+				setSocket(null);
+				setRoom(null);
 				reset({ index: 1, routes: [{ name: 'Home' }] });
 			})
 			.catch(error => {
@@ -309,7 +303,6 @@ export default function GameScreen(props) {
 			.then(async response => {
 				setLoading(false);
 				setGame(response.data.current_game);
-				console.log(response.data.current_game.status);
 				setGameState(response.data.current_game.status);
 				if (
 					response.data.current_game.status === 'place bets' ||
@@ -320,9 +313,6 @@ export default function GameScreen(props) {
 						setAlreadyBet(true);
 					} else {
 						setAlreadyBet(false);
-					}
-					if (response.data.current_game.status === 'in game') {
-						await getPlayerCards(response.data.current_game._id);
 					}
 				}
 			})
@@ -359,7 +349,7 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
+					adUnitID={process.env.ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>
@@ -392,11 +382,16 @@ export default function GameScreen(props) {
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
+							flexWrap: 'wrap'
 						}}>
-						<Text style={{ color: '#f1f1f1', fontSize: 25 }}>
-							{' '}
-							Turn winner: {displayWinner}
+						<Text
+							style={{
+								color: '#f1f1f1',
+								fontSize: 25,
+								textAlign: 'center'
+							}}>
+							{displayWinner} won the hand
 						</Text>
 					</View>
 				</Modal>
@@ -454,7 +449,6 @@ export default function GameScreen(props) {
 					</View>
 				</Modal>
 			)}
-
 			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 				{gameState && gameState === 'in queue' && (
 					<View style={styles.container}>
@@ -479,53 +473,62 @@ export default function GameScreen(props) {
 									</View>
 								);
 							})}
-						{user && game && user == game.createdBy._id && (
-							<View
-								style={[
-									styles.row,
-									{
-										marginHorizontal: 0,
-										marginTop: 20,
-										justifyContent: 'center'
-									}
-								]}>
-								<TouchableOpacity
-									style={{
-										backgroundColor: '#27496d',
-										height: 50,
-										width: width - 30,
-										borderRadius: 25,
-										marginLeft: 10,
-										marginRight: 10,
-										marginVertical: 10,
-										alignItems: 'center',
-										justifyContent: 'center',
-										shadowOffset: { width: 0, height: 1 },
-										shadowOpacity: 0.8,
-										shadowRadius: 2,
-										elevation: 5,
-										flexDirection: 'row'
-									}}
-									onPress={async () => {
-										await startGame();
-									}}>
-									<Icon
-										name='play'
-										color={'white'}
-										type='font-awesome'
-										iconStyle={{ margin: 10 }}
-									/>
-									<Text
+						{user &&
+							game &&
+							game.createdBy &&
+							user == game.createdBy._id && (
+								<View
+									style={[
+										styles.row,
+										{
+											marginHorizontal: 0,
+											marginTop: 20,
+											justifyContent: 'center'
+										}
+									]}>
+									<TouchableOpacity
 										style={{
-											color: 'white',
-											margin: 5,
-											fontWeight: 'bold'
+											backgroundColor: '#27496d',
+											height: 50,
+											width:
+												Platform.OS === 'web'
+													? 240
+													: width - 30,
+											borderRadius: 25,
+											marginLeft: 10,
+											marginRight: 10,
+											marginVertical: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											shadowOffset: {
+												width: 0,
+												height: 1
+											},
+											shadowOpacity: 0.8,
+											shadowRadius: 2,
+											elevation: 5,
+											flexDirection: 'row'
+										}}
+										onPress={async () => {
+											await startGame();
 										}}>
-										Start game
-									</Text>
-								</TouchableOpacity>
-							</View>
-						)}
+										<Icon
+											name='play'
+											color={'white'}
+											type='font-awesome'
+											iconStyle={{ margin: 10 }}
+										/>
+										<Text
+											style={{
+												color: 'white',
+												margin: 5,
+												fontWeight: 'bold'
+											}}>
+											Start game
+										</Text>
+									</TouchableOpacity>
+								</View>
+							)}
 						<View
 							style={[
 								styles.row,
@@ -538,7 +541,10 @@ export default function GameScreen(props) {
 								style={{
 									backgroundColor: '#a72121',
 									height: 50,
-									width: width - 30,
+									width:
+										Platform.OS === 'web'
+											? 240
+											: width - 30,
 									borderRadius: 25,
 									marginLeft: 10,
 									marginRight: 10,
@@ -596,7 +602,10 @@ export default function GameScreen(props) {
 								style={{
 									backgroundColor: '#a72121',
 									height: 50,
-									width: width - 30,
+									width:
+										Platform.OS === 'web'
+											? 240
+											: width - 30,
 									borderRadius: 25,
 									marginLeft: 10,
 									marginRight: 10,
@@ -900,28 +909,34 @@ export default function GameScreen(props) {
 												alignItems: 'center',
 												margin: 2
 											}}>
-											<Text
-												style={{
-													fontSize: 15,
-													fontWeight: 'bold',
-													color:
-														bet.player._id ===
-														currentPlayer
-															? '#21b121'
-															: '#f1f1f1'
-												}}>
-												{bet.player.name}{' '}
-												{tempResults[bet.player._id]}/
-												{bet.value}
-											</Text>
+											{bet && (
+												<Text
+													style={{
+														fontSize: 15,
+														fontWeight: 'bold',
+														color:
+															bet.player._id ===
+															currentPlayer
+																? '#21b121'
+																: '#f1f1f1'
+													}}>
+													{bet.player.name}{' '}
+													{
+														tempResults[
+															bet.player._id
+														]
+													}
+													/{bet.value}
+												</Text>
+											)}
 											{playedCardsState &&
+												bet &&
 												playedCardsState.map(
 													(card, j) => {
 														if (
 															card.player._id ===
 															bet.player._id
 														) {
-															hasReturn = true;
 															return (
 																<Card
 																	key={j}
@@ -943,13 +958,6 @@ export default function GameScreen(props) {
 														}
 													}
 												)}
-											{!hasReturn && (
-												<Card
-													color={'back'}
-													value={0}
-													overlay={false}
-												/>
-											)}
 										</View>
 									);
 								})}
@@ -1081,7 +1089,10 @@ export default function GameScreen(props) {
 								style={{
 									backgroundColor: '#a72121',
 									height: 50,
-									width: width - 30,
+									width:
+										Platform.OS === 'web'
+											? 240
+											: width - 30,
 									borderRadius: 25,
 									marginVertical: 10,
 									marginHorizontal: 10,
@@ -1154,16 +1165,21 @@ export default function GameScreen(props) {
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
+							flexWrap: 'wrap'
 						}}>
-						<Text style={{ color: '#f1f1f1', fontSize: 25 }}>
-							{' '}
-							Turn winner: {displayWinner}
+						<Text
+							style={{
+								color: '#f1f1f1',
+								fontSize: 25,
+								fontWeight: 'bold',
+								textAlign: 'center'
+							}}>
+							{displayWinner} won the hand
 						</Text>
 					</View>
 				</View>
 			)}
-
 			{Platform.OS === 'web' && choiceVisible && (
 				<View
 					style={[

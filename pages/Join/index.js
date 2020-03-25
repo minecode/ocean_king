@@ -10,9 +10,11 @@ import {
 	AppState,
 	Platform
 } from 'react-native';
+let AsyncStorage = null;
+let Modal = null;
 if (Platform.OS !== 'web') {
-	const AsyncStorage = require('react-native').AsyncStorage;
-	const Modal = require('react-native-modal');
+	AsyncStorage = require('react-native').AsyncStorage;
+	Modal = require('react-native-modal').default;
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
@@ -98,6 +100,7 @@ export default function JoinScreen(props) {
 	async function getGames() {
 		await get('/game/', { user: user })
 			.then(async response => {
+				console.log(response.data);
 				setLoading(false);
 				if (response.data.games.length !== 0) {
 					setGames(response.data.games);
@@ -119,13 +122,6 @@ export default function JoinScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			{/* {Platform.OS !== 'web' && <AdMobBanner
-				bannerSize='fullBanner'
-				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
-				servePersonalizedAds // true or false
-				bannerSize={'smartBannerLandscape'}
-			/>} */}
-
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={loading}

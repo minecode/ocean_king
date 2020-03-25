@@ -10,9 +10,14 @@ import {
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
+let AdSense = null;
+let GoogleLogout = null;
 if (Platform.OS !== 'web') {
 	AsyncStorage = require('react-native').AsyncStorage;
-	Modal = require('react-native-modal');
+	Modal = require('react-native-modal').default;
+} else {
+	AdSense = require('react-adsense').default;
+	GoogleLogout = require('react-google-login').GoogleLogout;
 }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
@@ -22,11 +27,13 @@ import { post, get, put, remove } from '../../services/api';
 import store from '../../store';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
+import * as GoogleSignIn from 'expo-google-sign-in';
 
 export default function HomeScreen(props) {
 	const [loading, setLoading] = useState(false);
 	const [user, setUser] = useState(null);
 	const [username, setUsername] = useState(null);
+	const [error, setError] = useState(false);
 	const { height, width } = Dimensions.get('window');
 
 	const { navigate, reset } = props.navigation;
@@ -59,6 +66,12 @@ export default function HomeScreen(props) {
 	useEffect(() => {
 		if (Platform.OS !== 'web') {
 			setTestDeviceIDAsync('EMULATOR');
+		} else {
+			// const script = document.createElement('script');
+			// script.src =
+			// 	'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
+			// script.async = true;
+			// document.body.appendChild(script);
 		}
 
 		getUser();
@@ -92,23 +105,28 @@ export default function HomeScreen(props) {
 	}
 
 	async function newGame() {
-		await post('/game', { user: user })
-			.then(async response => {
-				setLoading(false);
-				reset({
-					index: 1,
-					routes: [
-						{
-							name: 'Game',
-							params: { game: response.data.game._id }
-						}
-					]
+		setLoading(true);
+		if (user) {
+			await post('/game', { user: user })
+				.then(async response => {
+					setLoading(false);
+					reset({
+						index: 1,
+						routes: [
+							{
+								name: 'Game',
+								params: { game: response.data.game._id }
+							}
+						]
+					});
+				})
+				.catch(error => {
+					console.log(error);
+					setLoading(false);
 				});
-			})
-			.catch(error => {
-				console.log(error);
-				setLoading(false);
-			});
+		} else {
+			setError('Please, logout and try again');
+		}
 	}
 
 	return (
@@ -144,26 +162,50 @@ export default function HomeScreen(props) {
 					<Image
 						source={require('../../assets/ocean_king.png')}
 						style={{
-							width: 100,
-							height: 100
+							width: 200,
+							height: 200
 						}}
-						placeholderStyle={{
-							backgroundColor: 'transparent'
-						}}
+						placeholderStyle={{ backgroundColor: 'transparent' }}
 					/>
 				</View>
 				<View
 					style={[
 						styles.row,
-						{ marginHorizontal: 0, marginTop: 20 }
+						{ justifyContent: 'center', alignItems: 'center' }
+					]}>
+					{error && <Text style={{ color: 'red' }}>{error}</Text>}
+				</View>
+				{username && (
+					<View
+						style={[
+							styles.row,
+							{ justifyContent: 'center', marginTop: 10 }
+						]}>
+						<Text style={{ color: '#f1f1f1', fontSize: 15 }}>
+							{username}
+						</Text>
+					</View>
+				)}
+				<View
+					style={[
+						styles.row,
+						{
+							marginHorizontal: 0,
+							marginTop: 20,
+							justifyContent:
+								Platform.OS === 'web'
+									? 'center'
+									: 'space-around'
+						}
 					]}>
 					<TouchableOpacity
 						style={{
 							backgroundColor: '#142850',
 							height: 50,
-							width: (width - 30) / 2,
+							width:
+								Platform.OS === 'web' ? 240 : (width - 30) / 2,
 							borderRadius: 25,
-							marginLeft: 10,
+							marginLeft: Platform.OS === 'web' ? 0 : 15,
 							marginRight: 5,
 							marginVertical: 10,
 							alignItems: 'center',
@@ -196,10 +238,11 @@ export default function HomeScreen(props) {
 						style={{
 							backgroundColor: '#27496d',
 							height: 50,
-							width: (width - 30) / 2,
+							width:
+								Platform.OS === 'web' ? 240 : (width - 30) / 2,
 							borderRadius: 25,
 							marginLeft: 5,
-							marginRight: 10,
+							marginRight: Platform.OS === 'web' ? 0 : 15,
 							marginVertical: 10,
 							alignItems: 'center',
 							justifyContent: 'center',
@@ -228,33 +271,11 @@ export default function HomeScreen(props) {
 						</Text>
 					</TouchableOpacity>
 				</View>
-				<View
-					style={[
-						styles.row,
-						{
-							marginHorizontal: 0,
-							marginTop: 20,
-							justifyContent: 'center'
-						}
-					]}>
-					<TouchableOpacity
-						style={{
-							backgroundColor: '#142850',
-							height: 50,
-							width: width - 30,
-							borderRadius: 25,
-							marginLeft: 5,
-							marginRight: 5,
-							marginVertical: 10,
-							alignItems: 'center',
-							justifyContent: 'center',
-							shadowOffset: { width: 0, height: 1 },
-							shadowOpacity: 0.8,
-							shadowRadius: 2,
-							elevation: 5,
-							flexDirection: 'row'
-						}}
-						onPress={async () => {
+				{Platform.OS === 'web' && (
+					<GoogleLogout
+						clientId={process.env.ANDROIDCLIENTIDWEB}
+						buttonText='Logout'
+						onLogoutSuccess={async () => {
 							if (Platform.OS !== 'web') {
 								await AsyncStorage.removeItem(
 									'@ocean_king:user'
@@ -266,28 +287,143 @@ export default function HomeScreen(props) {
 								localStorage.removeItem('@ocean_king:user');
 								localStorage.removeItem('@ocean_king:username');
 							}
-
 							reset({
 								index: 1,
 								routes: [{ name: 'Login' }]
 							});
-						}}>
-						<Icon
-							name='sign-out'
-							color={'white'}
-							type='font-awesome'
-							iconStyle={{ margin: 10 }}
-						/>
-						<Text
+						}}
+						render={renderProps => {
+							console.log(renderProps);
+							return (
+								<View
+									style={[
+										styles.row,
+										{
+											marginHorizontal: 0,
+											marginTop: 20,
+											justifyContent: 'center'
+										}
+									]}>
+									<TouchableOpacity
+										style={{
+											backgroundColor: '#142850',
+											height: 50,
+											width:
+												Platform.OS === 'web'
+													? 500
+													: width - 30,
+											borderRadius: 25,
+											marginLeft: 5,
+											marginRight: 5,
+											marginVertical: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											shadowOffset: {
+												width: 0,
+												height: 1
+											},
+											shadowOpacity: 0.8,
+											shadowRadius: 2,
+											elevation: 5,
+											flexDirection: 'row'
+										}}
+										onPress={renderProps.onClick}>
+										<Icon
+											name='sign-out'
+											color={'white'}
+											type='font-awesome'
+											iconStyle={{ margin: 10 }}
+										/>
+										<Text
+											style={{
+												color: 'white',
+												margin: 5,
+												fontWeight: 'bold'
+											}}>
+											Logout
+										</Text>
+									</TouchableOpacity>
+								</View>
+							);
+						}}
+					/>
+				)}
+				{Platform.OS !== 'web' && (
+					<View
+						style={[
+							styles.row,
+							{
+								marginHorizontal: 0,
+								marginTop: 20,
+								justifyContent: 'center'
+							}
+						]}>
+						<TouchableOpacity
 							style={{
-								color: 'white',
-								margin: 5,
-								fontWeight: 'bold'
+								backgroundColor: '#142850',
+								height: 50,
+								width: Platform.OS === 'web' ? 500 : width - 30,
+								borderRadius: 25,
+								marginLeft: 5,
+								marginRight: 5,
+								marginVertical: 10,
+								alignItems: 'center',
+								justifyContent: 'center',
+								shadowOffset: {
+									width: 0,
+									height: 1
+								},
+								shadowOpacity: 0.8,
+								shadowRadius: 2,
+								elevation: 5,
+								flexDirection: 'row'
+							}}
+							onPress={async () => {
+								if (__DEV__) {
+									console.log('Logout');
+								} else {
+									try {
+										await GoogleSignIn.disconnectAsync();
+									} catch (err) {
+										setError(err.message);
+									}
+								}
+
+								if (Platform.OS !== 'web') {
+									await AsyncStorage.removeItem(
+										'@ocean_king:user'
+									);
+									await AsyncStorage.removeItem(
+										'@ocean_king:username'
+									);
+								} else {
+									localStorage.removeItem('@ocean_king:user');
+									localStorage.removeItem(
+										'@ocean_king:username'
+									);
+								}
+								reset({
+									index: 1,
+									routes: [{ name: 'Login' }]
+								});
 							}}>
-							Logout
-						</Text>
-					</TouchableOpacity>
-				</View>
+							<Icon
+								name='sign-out'
+								color={'white'}
+								type='font-awesome'
+								iconStyle={{ margin: 10 }}
+							/>
+							<Text
+								style={{
+									color: 'white',
+									margin: 5,
+									fontWeight: 'bold'
+								}}>
+								Logout
+							</Text>
+						</TouchableOpacity>
+					</View>
+				)}
 				<View style={[styles.row, { justifyContent: 'center' }]}>
 					<TouchableOpacity
 						onPress={() => {
@@ -298,6 +434,16 @@ export default function HomeScreen(props) {
 						</Text>
 					</TouchableOpacity>
 				</View>
+			</View>
+			<View
+				style={[
+					styles.row,
+					{
+						justifyContent: 'flex-start',
+						marginBottom: 20
+					}
+				]}>
+				<Text style={{ color: '#a1a1a1' }}>v202003241828</Text>
 			</View>
 
 			{Platform.OS === 'web' && loading && (
@@ -319,7 +465,13 @@ export default function HomeScreen(props) {
 							justifyContent: 'center'
 						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
-						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+						<Text
+							style={{
+								color: '#f1f1f1'
+							}}>
+							{' '}
+							Loanding...
+						</Text>
 					</View>
 				</View>
 			)}

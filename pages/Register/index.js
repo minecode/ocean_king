@@ -7,9 +7,11 @@ import {
 	ActivityIndicator,
 	Platform
 } from 'react-native';
+let AsyncStorage = null;
+let Modal = null;
 if (Platform.OS !== 'web') {
-	const AsyncStorage = require('react-native').AsyncStorage;
-	const Modal = require('react-native-modal');
+	AsyncStorage = require('react-native').AsyncStorage;
+	Modal = require('react-native-modal').default;
 }
 import styles from '../../style';
 import { SocialIcon, Input, Icon } from 'react-native-elements';
@@ -89,13 +91,6 @@ export default function LoginScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			{/* {Platform.OS !== 'web' && <AdMobBanner
-				bannerSize='fullBanner'
-				adUnitID='ca-app-pub-7606799175531903/7143162423' // Test ID, Replace with your-admob-unit-id
-				servePersonalizedAds // true or false
-				bannerSize={'smartBannerLandscape'}
-			/>} */}
-
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={loading}
