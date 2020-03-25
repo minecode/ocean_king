@@ -36,7 +36,7 @@ jobs:
                   echo "GOOGLE_SIGNIN_APIKEY=${GOOGLE_SIGNIN_APIKEY}"
                   printenv
             - run: yarn install --frozen-lockfile
-
+            - run: expo build:web
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
               with:
