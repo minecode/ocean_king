@@ -13,6 +13,13 @@ let Modal = null;
 let AdSense = null;
 let GoogleLogin = null;
 let GoogleLogout = null;
+import {
+	APIKEY,
+	ANDROIDCLIENTID,
+	ANDROIDSTANDALONEAPPCLIENTID,
+	ANDROIDCLIENTIDWEB,
+	ADMOBUNITID
+} from 'react-native-dotenv';
 if (Platform.OS !== 'web') {
 	AsyncStorage = require('react-native').AsyncStorage;
 	Modal = require('react-native-modal').default;
@@ -302,6 +309,17 @@ export default function LoginScreen(props) {
 	}
 
 	useEffect(() => {
+		console.log(process.env.APIKEY);
+		console.log(process.env.ANDROIDCLIENTID);
+		console.log(process.env.ANDROIDSTANDALONEAPPCLIENTID);
+		console.log(process.env.ANDROIDCLIENTIDWEB);
+		console.log(process.env.ADMOBUNITID);
+
+		console.log(APIKEY);
+		console.log(ANDROIDCLIENTID);
+		console.log(ANDROIDSTANDALONEAPPCLIENTID);
+		console.log(ANDROIDCLIENTIDWEB);
+		console.log(ADMOBUNITID);
 		if (__DEV__) {
 			console.log('I am in debug');
 		} else {
