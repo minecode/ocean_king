@@ -35,6 +35,7 @@ jobs:
               with:
                   expo-version: 3.x
             - run: yarn install --frozen-lockfile
+            - run: expo web:build
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
               with:
