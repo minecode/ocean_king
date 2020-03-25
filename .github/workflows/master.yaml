@@ -25,6 +25,7 @@ jobs:
                       ${{ runner.os }}-node-
             - name: Set env variables
               run: touch .env & echo -e "GOOGLEMOBILEADSAPPID=${{ secrets.GOOGLEMOBILEADSAPPID }}\nADMOBUNITID=${{ secrets.ADMOBUNITID }}\nANDROIDCLIENTID=${{  secrets.ANDROIDCLIENTID }}\nANDROIDCLIENTIDWEB=${{  secrets. ANDROIDCLIENTIDWEB }}\nANDROIDSTANDALONEAPPCLIENTID=${{  secrets. ANDROIDSTANDALONEAPPCLIENTID }}\nGOOGLE_SIGNIN_APIKEY=${{  secrets.GOOGLE_SIGNIN_APIKEY }}" > .env
+
             - name: View variables
               run: cat .env
             - uses: expo/expo-github-action@v5

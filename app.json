@@ -27,7 +27,7 @@
 			"config": {
 				"googleMobileAdsAppId": "${process.env.GOOGLEMOBILEADSAPPID}",
 				"googleSignIn": {
-					"apiKey": "${process.env.GOOGLE_SIGNIN_APIKEY}"
+					"apiKey": "${GOOGLE_SIGNIN_APIKEY}"
 				}
 			}
 		}
