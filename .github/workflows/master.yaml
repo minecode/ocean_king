@@ -23,22 +23,10 @@ jobs:
                   key: ${{ runner.os }}-node-${{ hashFiles('yarn.lock') }}
                   restore-keys: |
                       ${{ runner.os }}-node-
-            - name: set environment variables
-              uses: allenevans/set-env@v1.0.0
-              with:
-                  GOOGLE_SIGNIN_APIKEY: ${{ secrets.GOOGLE_SIGNIN_APIKEY }}
-                  ANDROIDSTANDALONEAPPCLIENTID: ${{ secrets.ANDROIDSTANDALONEAPPCLIENTID }}
-                  ANDROIDCLIENTIDWEB: ${{ secrets.ANDROIDCLIENTIDWEB }}
-                  ANDROIDCLIENTID: ${{ secrets.ANDROIDCLIENTID }}
-                  ADMOBUNITID: ${{ secrets.ADMOBUNITID }}
-            - name: Printenv
-              run: |
-                  echo "GOOGLE_SIGNIN_APIKEY=${GOOGLE_SIGNIN_APIKEY}"
-                  echo "ANDROIDSTANDALONEAPPCLIENTID=${ANDROIDSTANDALONEAPPCLIENTID}"
-                  echo "ANDROIDCLIENTIDWEB=${ANDROIDCLIENTIDWEB}"
-                  echo "ANDROIDCLIENTID=${ANDROIDCLIENTID}"
-                  echo "ADMOBUNITID=${ADMOBUNITID}"
-                  printenv
+            - name: Set env variables
+              run: touch .env & echo "ADMOBUNITID=${{ secrets. ADMOBUNITID }}" > .env
+            - name: View variables
+              run: cat .env 
             - uses: expo/expo-github-action@v5
               with:
                   expo-version: 3.x
