@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/ocean_king/static/js/app.f804a056.chunk.js",
-    "app.js.map": "/ocean_king/static/js/app.f804a056.chunk.js.map",
+    "app.js": "/ocean_king/static/js/app.c4eab9d1.chunk.js",
+    "app.js.map": "/ocean_king/static/js/app.c4eab9d1.chunk.js.map",
     "runtime~app.js": "/ocean_king/static/js/runtime~app.083f480d.js",
     "runtime~app.js.map": "/ocean_king/static/js/runtime~app.083f480d.js.map",
-    "static/js/2.f359fbd5.chunk.js": "/ocean_king/static/js/2.f359fbd5.chunk.js",
-    "static/js/2.f359fbd5.chunk.js.map": "/ocean_king/static/js/2.f359fbd5.chunk.js.map",
+    "static/js/2.dad234ce.chunk.js": "/ocean_king/static/js/2.dad234ce.chunk.js",
+    "static/js/2.dad234ce.chunk.js.map": "/ocean_king/static/js/2.dad234ce.chunk.js.map",
     "fonts/AntDesign.ttf": "/ocean_king/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/ocean_king/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/ocean_king/./fonts/Feather.ttf",
@@ -33,7 +33,7 @@
     "favicon.ico": "/ocean_king/favicon.ico",
     "index.html": "/ocean_king/index.html",
     "manifest.json": "/ocean_king/manifest.json",
-    "precache-manifest.a0a9c4cd76d3af767664fa1fee78e563.js": "/ocean_king/precache-manifest.a0a9c4cd76d3af767664fa1fee78e563.js",
+    "precache-manifest.56fa25fd7cc292a589e75898eb922236.js": "/ocean_king/precache-manifest.56fa25fd7cc292a589e75898eb922236.js",
     "serve.json": "/ocean_king/serve.json",
     "static/media/back.png": "/ocean_king/static/media/back.68a8d42f.png",
     "static/media/bell.png": "/ocean_king/static/media/bell.a7b9dc9d.png",
@@ -78,7 +78,7 @@
   },
   "entrypoints": [
     "static/js/runtime~app.083f480d.js",
-    "static/js/2.f359fbd5.chunk.js",
-    "static/js/app.f804a056.chunk.js"
+    "static/js/2.dad234ce.chunk.js",
+    "static/js/app.c4eab9d1.chunk.js"
   ]
 }
