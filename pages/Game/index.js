@@ -349,7 +349,7 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID={process.env.ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
+					adUnitID={ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>

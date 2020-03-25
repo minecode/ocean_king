@@ -273,7 +273,7 @@ export default function HomeScreen(props) {
 				</View>
 				{Platform.OS === 'web' && (
 					<GoogleLogout
-						clientId={process.env.ANDROIDCLIENTIDWEB}
+						clientId={ANDROIDCLIENTIDWEB}
 						buttonText='Logout'
 						onLogoutSuccess={async () => {
 							if (Platform.OS !== 'web') {

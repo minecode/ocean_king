@@ -56,9 +56,8 @@ export default function LoginScreen(props) {
 		if (__DEV__) {
 			try {
 				const { type, accessToken, user } = await Google.logInAsync({
-					androidClientId: process.env.ANDROIDCLIENTID,
-					androidStandaloneAppClientId:
-						process.env.ANDROIDSTANDALONEAPPCLIENTID
+					androidClientId: ANDROIDCLIENTID,
+					androidStandaloneAppClientId: ANDROIDSTANDALONEAPPCLIENTID
 				});
 				if (type === 'success') {
 					await post('/auth/googleLogin/', { user })
@@ -309,20 +308,6 @@ export default function LoginScreen(props) {
 	}
 
 	useEffect(() => {
-		console.log(process);
-		console.log(process.env);
-
-		console.log(process.env.GOOGLE_SIGNIN_APIKEY);
-		console.log(process.env.ANDROIDCLIENTID);
-		console.log(process.env.ANDROIDSTANDALONEAPPCLIENTID);
-		console.log(process.env.ANDROIDCLIENTIDWEB);
-		console.log(process.env.ADMOBUNITID);
-
-		console.log(GOOGLE_SIGNIN_APIKEY);
-		console.log(ANDROIDCLIENTID);
-		console.log(ANDROIDSTANDALONEAPPCLIENTID);
-		console.log(ANDROIDCLIENTIDWEB);
-		console.log(ADMOBUNITID);
 		if (__DEV__) {
 			console.log('I am in debug');
 		} else {
@@ -348,7 +333,7 @@ export default function LoginScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID={process.env.ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
+					adUnitID={ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>
@@ -527,7 +512,7 @@ export default function LoginScreen(props) {
 				{Platform.OS === 'web' && (
 					<View style={[styles.row, { justifyContent: 'center' }]}>
 						<GoogleLogin
-							clientId={process.env.ANDROIDCLIENTIDWEB}
+							clientId={ANDROIDCLIENTIDWEB}
 							buttonText='Login'
 							onSuccess={responseGoogle}
 							onFailure={badResponseGoogle}
