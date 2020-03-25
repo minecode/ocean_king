@@ -28,7 +28,9 @@ import store from '../../store';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
 import * as GoogleSignIn from 'expo-google-sign-in';
-
+import {
+	ANDROIDCLIENTIDWEB
+} from 'react-native-dotenv';
 export default function HomeScreen(props) {
 	const [loading, setLoading] = useState(false);
 	const [user, setUser] = useState(null);
@@ -273,7 +275,7 @@ export default function HomeScreen(props) {
 				</View>
 				{Platform.OS === 'web' && (
 					<GoogleLogout
-						clientId={process.env.ANDROIDCLIENTIDWEB}
+						clientId={ANDROIDCLIENTIDWEB}
 						buttonText='Logout'
 						onLogoutSuccess={async () => {
 							if (Platform.OS !== 'web') {

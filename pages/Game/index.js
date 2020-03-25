@@ -27,6 +27,9 @@ import { post, get } from '../../services/api';
 import Card from '../Components/Card';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
+import {
+	ADMOBUNITID
+} from 'react-native-dotenv';
 
 export default function GameScreen(props) {
 	const { height, width } = Dimensions.get('window');
@@ -349,7 +352,7 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID={process.env.ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
+					adUnitID={ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>
