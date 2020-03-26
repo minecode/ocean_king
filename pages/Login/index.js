@@ -14,10 +14,10 @@ let AdSense = null;
 let GoogleLogin = null;
 let GoogleLogout = null;
 import {
-	ANDROIDCLIENTID,
-	ANDROIDSTANDALONEAPPCLIENTID,
-	ANDROIDCLIENTIDWEB,
-	ADMOBUNITID
+	ANDROID_CLIENT_ID,
+	ANDROID_STANDALONE_APP_CLIENT_ID,
+	ANDROID_CLIENT_ID_WEB,
+	AD_MOB_UNIT_ID
 } from 'react-native-dotenv';
 if (Platform.OS !== 'web') {
 	AsyncStorage = require('react-native').AsyncStorage;
@@ -55,8 +55,8 @@ export default function LoginScreen(props) {
 		if (__DEV__) {
 			try {
 				const { type, accessToken, user } = await Google.logInAsync({
-					androidClientId: ANDROIDCLIENTID,
-					androidStandaloneAppClientId: ANDROIDSTANDALONEAPPCLIENTID
+					ANDROID_CLIENT_ID: ANDROID_CLIENT_ID,
+					ANDROID_STANDALONE_APP_CLIENT_ID: ANDROID_STANDALONE_APP_CLIENT_ID
 				});
 				if (type === 'success') {
 					await post('/auth/googleLogin/', { user })
@@ -332,7 +332,7 @@ export default function LoginScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID={ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
+					adUnitID={AD_MOB_UNIT_ID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>
@@ -511,7 +511,7 @@ export default function LoginScreen(props) {
 				{Platform.OS === 'web' && (
 					<View style={[styles.row, { justifyContent: 'center' }]}>
 						<GoogleLogin
-							clientId={ANDROIDCLIENTIDWEB}
+							clientId={ANDROID_CLIENT_ID_WEB}
 							buttonText='Login'
 							onSuccess={responseGoogle}
 							onFailure={badResponseGoogle}

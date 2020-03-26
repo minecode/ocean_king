@@ -26,7 +26,7 @@ import { post, get } from '../../services/api';
 import { Image } from 'react-native-elements';
 import { setTestDeviceIDAsync, AdMobBanner } from 'expo-ads-admob';
 import * as GoogleSignIn from 'expo-google-sign-in';
-import { ANDROIDCLIENTIDWEB, ADMOBUNITID } from 'react-native-dotenv';
+import { ANDROID_CLIENT_ID_WEB, AD_MOB_UNIT_ID } from 'react-native-dotenv';
 
 export default function HomeScreen(props) {
 	const [loading, setLoading] = useState(false);
@@ -133,7 +133,7 @@ export default function HomeScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID={ADMOBUNITID} // Test ID, Replace with your-admob-unit-id
+					adUnitID={AD_MOB_UNIT_ID} // Test ID, Replace with your-admob-unit-id
 					servePersonalizedAds // true or false
 					bannerSize={'smartBannerLandscape'}
 				/>
@@ -272,7 +272,7 @@ export default function HomeScreen(props) {
 				</View>
 				{Platform.OS === 'web' && (
 					<GoogleLogout
-						clientId={ANDROIDCLIENTIDWEB}
+						clientId={ANDROID_CLIENT_ID_WEB}
 						buttonText='Logout'
 						onLogoutSuccess={async () => {
 							if (Platform.OS !== 'web') {

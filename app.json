@@ -25,9 +25,9 @@
 			"versionCode": 3,
 			"googleServicesFile": "./google-services.json",
 			"config": {
-				"googleMobileAdsAppId": "${process.env.GOOGLEMOBILEADSAPPID}",
+				"googleMobileAdsAppId": "${process.env.GOOGLE_MOBILE_ADS_APP_ID}",
 				"googleSignIn": {
-					"apiKey": "${GOOGLE_SIGNIN_APIKEY}"
+					"apiKey": "${GOOGLE_SIGNIN_API_KEY}"
 				}
 			}
 		}
