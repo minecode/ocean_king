@@ -24,7 +24,7 @@ jobs:
                   restore-keys: |
                       ${{ runner.os }}-node-
             - name: Set env variables
-              run: touch .env & echo -e "GOOGLE_MOBILE_ADS_APP_ID=${{ secrets.GOOGLE_MOBILE_ADS_APP_ID }}\nAD_MOB_UNIT_ID=${{ secrets.AD_MOB_UNIT_ID }}\nANDROID_CLIENT_ID=${{  secrets.ANDROID_CLIENT_ID }}\nANDROID_CLIENT_ID_WEB=${{  secrets.ANDROID_CLIENT_ID_WEB }}\nANDROID_STANDALONE_APP_CLIENT_ID=${{  secrets.ANDROID_STANDALONE_APP_CLIENT_ID }}\nGOOGLE_SIGNIN_API_KEY=${{  secrets.GOOGLE_SIGNIN_API_KEY }}" > .env
+              run: touch .env & echo -e "GOOGLE_MOBILE_ADS_APP_ID=${{ secrets.GOOGLE_MOBILE_ADS_APP_ID }}\nAD_MOB_UNIT_ID=${{ secrets.AD_MOB_UNIT_ID }}\nANDROID_CLIENT_ID=${{  secrets.ANDROID_CLIENT_ID }}\nANDROID_CLIENT_ID_WEB=${{  secrets.ANDROID_CLIENT_ID_WEB }}\nANDROID_STANDALONE_APP_CLIENT_ID=${{  secrets.ANDROID_STANDALONE_APP_CLIENT_ID }}\nGOOGLE_SIGN_IN_API_KEY=${{  secrets.GOOGLE_SIGN_IN_API_KEY }}" > .env
 
             - name: View variables
               run: cat .env
