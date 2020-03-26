@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "dd1ab1c6dc194f9255c4",
-    "url": "/ocean_king/static/js/app.2d642d15.chunk.js"
+    "revision": "ee48cb43ab6ea915d6a2",
+    "url": "/ocean_king/static/js/app.64ce63f9.chunk.js"
   },
   {
     "revision": "95b71ad4c5e82faedc6c",
@@ -208,16 +208,16 @@ self.__precacheManifest = [
     "url": "/ocean_king/static/media/binary.0251c634.jpg"
   },
   {
+    "revision": "d0c694b562b2208635f250762cd7fc79",
+    "url": "/ocean_king/serve.json"
+  },
+  {
     "revision": "3744a6e17abac9ba8cbd0f60338bfc4f",
     "url": "/ocean_king/favicon.ico"
   },
   {
     "revision": "48c7ed4e7da9792af288a60d7242d615",
     "url": "/ocean_king/expo-service-worker.js"
-  },
-  {
-    "revision": "d0c694b562b2208635f250762cd7fc79",
-    "url": "/ocean_king/serve.json"
   },
   {
     "revision": "6afd342d7fc2dab50c7f5361382dc5e2",
@@ -284,7 +284,7 @@ self.__precacheManifest = [
     "url": "/ocean_king/apple/splash/icon_828x1792.png"
   },
   {
-    "revision": "68a86f08de3df61a7a5806c3440b4ed8",
+    "revision": "d112b6cd3e8ea912d43b7cb67806a39a",
     "url": "/ocean_king/index.html"
   },
   {
