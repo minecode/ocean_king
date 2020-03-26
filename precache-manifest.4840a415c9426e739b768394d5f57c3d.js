@@ -208,16 +208,16 @@ self.__precacheManifest = [
     "url": "/ocean_king/static/media/binary.0251c634.jpg"
   },
   {
+    "revision": "48c7ed4e7da9792af288a60d7242d615",
+    "url": "/ocean_king/expo-service-worker.js"
+  },
+  {
     "revision": "d0c694b562b2208635f250762cd7fc79",
     "url": "/ocean_king/serve.json"
   },
   {
     "revision": "3744a6e17abac9ba8cbd0f60338bfc4f",
     "url": "/ocean_king/favicon.ico"
-  },
-  {
-    "revision": "48c7ed4e7da9792af288a60d7242d615",
-    "url": "/ocean_king/expo-service-worker.js"
   },
   {
     "revision": "6afd342d7fc2dab50c7f5361382dc5e2",
