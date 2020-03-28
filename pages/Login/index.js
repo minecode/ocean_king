@@ -196,7 +196,8 @@ export default function LoginScreen(props) {
 		await post('/auth/googleLogin/', {
 			user: {
 				email: response.profileObj.email,
-				name: response.profileObj.name
+				name: response.profileObj.name,
+				imageURL: response.profileObj.imageUrl
 			}
 		})
 			.then(async response => {
@@ -516,6 +517,7 @@ export default function LoginScreen(props) {
 							onSuccess={responseGoogle}
 							onFailure={badResponseGoogle}
 							cookiePolicy={'single_host_origin'}
+							scope={'profile email openid'}
 							render={renderProps => {
 								return (
 									<View
