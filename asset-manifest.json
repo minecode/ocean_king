@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/ocean_king/static/js/app.64ce63f9.chunk.js",
-    "app.js.map": "/ocean_king/static/js/app.64ce63f9.chunk.js.map",
+    "app.js": "/ocean_king/static/js/app.88b7fd0f.chunk.js",
+    "app.js.map": "/ocean_king/static/js/app.88b7fd0f.chunk.js.map",
     "runtime~app.js": "/ocean_king/static/js/runtime~app.083f480d.js",
     "runtime~app.js.map": "/ocean_king/static/js/runtime~app.083f480d.js.map",
-    "static/js/2.88ca446c.chunk.js": "/ocean_king/static/js/2.88ca446c.chunk.js",
-    "static/js/2.88ca446c.chunk.js.map": "/ocean_king/static/js/2.88ca446c.chunk.js.map",
+    "static/js/2.12dfb8b8.chunk.js": "/ocean_king/static/js/2.12dfb8b8.chunk.js",
+    "static/js/2.12dfb8b8.chunk.js.map": "/ocean_king/static/js/2.12dfb8b8.chunk.js.map",
     "fonts/AntDesign.ttf": "/ocean_king/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/ocean_king/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/ocean_king/./fonts/Feather.ttf",
@@ -15,25 +15,11 @@
     "fonts/MaterialCommunityIcons.ttf": "/ocean_king/./fonts/MaterialCommunityIcons.ttf",
     "fonts/MaterialIcons.ttf": "/ocean_king/./fonts/MaterialIcons.ttf",
     "fonts/SimpleLineIcons.ttf": "/ocean_king/./fonts/SimpleLineIcons.ttf",
-    "apple/icons/icon_180x180.png": "/ocean_king/apple/icons/icon_180x180.png",
-    "apple/icons/icon_192x192.png": "/ocean_king/apple/icons/icon_192x192.png",
-    "apple/icons/icon_512x512.png": "/ocean_king/apple/icons/icon_512x512.png",
-    "apple/splash/icon_1125x2436.png": "/ocean_king/apple/splash/icon_1125x2436.png",
-    "apple/splash/icon_1136x640.png": "/ocean_king/apple/splash/icon_1136x640.png",
-    "apple/splash/icon_1242x2208.png": "/ocean_king/apple/splash/icon_1242x2208.png",
-    "apple/splash/icon_1242x2688.png": "/ocean_king/apple/splash/icon_1242x2688.png",
-    "apple/splash/icon_1334x750.png": "/ocean_king/apple/splash/icon_1334x750.png",
-    "apple/splash/icon_1792x828.png": "/ocean_king/apple/splash/icon_1792x828.png",
-    "apple/splash/icon_2208x1242.png": "/ocean_king/apple/splash/icon_2208x1242.png",
-    "apple/splash/icon_2436x1125.png": "/ocean_king/apple/splash/icon_2436x1125.png",
-    "apple/splash/icon_2688x1242.png": "/ocean_king/apple/splash/icon_2688x1242.png",
-    "apple/splash/icon_640x1136.png": "/ocean_king/apple/splash/icon_640x1136.png",
-    "apple/splash/icon_750x1334.png": "/ocean_king/apple/splash/icon_750x1334.png",
-    "apple/splash/icon_828x1792.png": "/ocean_king/apple/splash/icon_828x1792.png",
+    "favicon-16.png": "/ocean_king/favicon-16.png",
+    "favicon-32.png": "/ocean_king/favicon-32.png",
     "favicon.ico": "/ocean_king/favicon.ico",
     "index.html": "/ocean_king/index.html",
     "manifest.json": "/ocean_king/manifest.json",
-    "precache-manifest.4840a415c9426e739b768394d5f57c3d.js": "/ocean_king/precache-manifest.4840a415c9426e739b768394d5f57c3d.js",
     "serve.json": "/ocean_king/serve.json",
     "static/media/back.png": "/ocean_king/static/media/back.68a8d42f.png",
     "static/media/bell.png": "/ocean_king/static/media/bell.a7b9dc9d.png",
@@ -78,7 +64,7 @@
   },
   "entrypoints": [
     "static/js/runtime~app.083f480d.js",
-    "static/js/2.88ca446c.chunk.js",
-    "static/js/app.64ce63f9.chunk.js"
+    "static/js/2.12dfb8b8.chunk.js",
+    "static/js/app.88b7fd0f.chunk.js"
   ]
 }
