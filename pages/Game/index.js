@@ -159,7 +159,7 @@ export default function GameScreen(props) {
 			});
 			socket.on('new turn', function(player) {
 				console.log('first play: ' + player.name);
-				setDisplayWinner(null);
+				// setDisplayWinner(null);
 				setPlayedCardsState(null);
 				setCurrentPlayer(player._id);
 				getPlayerStatus(room);
@@ -177,7 +177,7 @@ export default function GameScreen(props) {
 			socket.on('turn finish', function() {
 				console.log('turn finish');
 				// getPlayerStatus(props.route.params.game);
-				setDisplayWinner(null);
+				// setDisplayWinner(null);
 				setCurrentPlayer(null);
 			});
 			socket.on('game finished', function() {

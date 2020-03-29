@@ -55,8 +55,10 @@ export default function LoginScreen(props) {
 		if (__DEV__) {
 			try {
 				const { type, accessToken, user } = await Google.logInAsync({
-					ANDROID_CLIENT_ID: ANDROID_CLIENT_ID,
-					ANDROID_STANDALONE_APP_CLIENT_ID: ANDROID_STANDALONE_APP_CLIENT_ID
+					androidClientId: String(ANDROID_CLIENT_ID),
+					androidStandaloneAppClientId: String(
+						ANDROID_STANDALONE_APP_CLIENT_ID
+					)
 				});
 				if (type === 'success') {
 					await post('/auth/googleLogin/', { user })

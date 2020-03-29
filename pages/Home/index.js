@@ -194,7 +194,7 @@ export default function HomeScreen(props) {
 							justifyContent:
 								Platform.OS === 'web'
 									? 'center'
-									: 'space-around'
+									: 'space-between'
 						}
 					]}>
 					<TouchableOpacity
@@ -202,10 +202,9 @@ export default function HomeScreen(props) {
 							backgroundColor: '#142850',
 							height: 50,
 							width:
-								Platform.OS === 'web' ? 240 : (width - 30) / 2,
+								Platform.OS === 'web' ? 240 : (width - 45) / 2,
 							borderRadius: 25,
 							marginLeft: Platform.OS === 'web' ? 0 : 15,
-							marginRight: 5,
 							marginVertical: 10,
 							alignItems: 'center',
 							justifyContent: 'center',
@@ -238,9 +237,8 @@ export default function HomeScreen(props) {
 							backgroundColor: '#27496d',
 							height: 50,
 							width:
-								Platform.OS === 'web' ? 240 : (width - 30) / 2,
+								Platform.OS === 'web' ? 240 : (width - 45) / 2,
 							borderRadius: 25,
-							marginLeft: 5,
 							marginRight: Platform.OS === 'web' ? 0 : 15,
 							marginVertical: 10,
 							alignItems: 'center',
