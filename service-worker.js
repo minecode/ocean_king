@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/ocean_king/precache-manifest.8eb8e978dd0d483ebaa0ed8401240541.js"
+  "/ocean_king/precache-manifest.43a5cbf4beb15991a7e2962b3497ece4.js"
 );
 
 workbox.skipWaiting();
