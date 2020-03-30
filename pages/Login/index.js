@@ -632,7 +632,7 @@ export default function LoginScreen(props) {
 					}
 				]}>
 				<Text style={{ color: '#a1a1a1' }}>
-					{Platform.OS === 'web' && 'web'} v202003241828
+					{Platform.OS === 'web' && 'web'} v202003301845
 				</Text>
 			</View>
 			{Platform.OS === 'web' && loading && (

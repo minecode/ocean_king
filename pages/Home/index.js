@@ -446,7 +446,7 @@ export default function HomeScreen(props) {
 					}
 				]}>
 				<Text style={{ color: '#a1a1a1' }}>
-					{Platform.OS === 'web' && 'web'} v202003241828
+					{Platform.OS === 'web' && 'web'} v202003301845
 				</Text>
 			</View>
 
