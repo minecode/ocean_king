@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "3ee908400b49ee7960b8",
-    "url": "/ocean_king/static/js/app.9d76478b.chunk.js"
+    "revision": "36b0442d20f8dbd35e52",
+    "url": "/ocean_king/static/js/app.ecf0d346.chunk.js"
   },
   {
     "revision": "95b71ad4c5e82faedc6c",
@@ -228,7 +228,7 @@ self.__precacheManifest = [
     "url": "/ocean_king/favicon-32.png"
   },
   {
-    "revision": "d567a70dbc8b38c61be33c51cfa47fec",
+    "revision": "c934f39f47dba6b16794af45d99cc75f",
     "url": "/ocean_king/index.html"
   },
   {
