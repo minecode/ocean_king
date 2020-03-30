@@ -5,7 +5,7 @@
 		"privacy": "public",
 		"sdkVersion": "36.0.0",
 		"platforms": ["ios", "android", "web"],
-		"version": "3.0.0",
+		"version": "4.0.0",
 		"orientation": "portrait",
 		"icon": "./assets/ocean_king_logo.png",
 		"splash": {
@@ -22,10 +22,10 @@
 		},
 		"android": {
 			"package": "pt.fhenriques.ocean_king",
-			"versionCode": 3,
+			"versionCode": 4,
 			"googleServicesFile": "./google-services.json",
 			"config": {
-				"googleMobileAdsAppId": "${process.env.GOOGLE_MOBILE_ADS_APP_ID}",
+				"googleMobileAdsAppId": "${GOOGLE_MOBILE_ADS_APP_ID}",
 				"googleSignIn": {
 					"apiKey": "${GOOGLE_SIGN_IN_API_KEY}"
 				}

@@ -52,6 +52,8 @@ export default function GameScreen(props) {
 	const [choiceVisible, setChoiceVisible] = useState(false);
 	const [socket, setSocket] = useState(null);
 	const [room, setRoom] = useState(null);
+	const [colorArray, setColorArray] = useState(null);
+
 	async function getUser() {
 		let user = null;
 		let name = null;
@@ -113,6 +115,7 @@ export default function GameScreen(props) {
 				getPontuations(room);
 			} else if (gameState === 'in game') {
 				setAlreadyBet(false);
+				getPontuations(room);
 				getPlayerCards(room);
 				getCurrentPlayer(room);
 				getPlayerStatus(room);
@@ -159,7 +162,7 @@ export default function GameScreen(props) {
 			});
 			socket.on('new turn', function(player) {
 				console.log('first play: ' + player.name);
-				// setDisplayWinner(null);
+				setDisplayWinner(null);
 				setPlayedCardsState(null);
 				setCurrentPlayer(player._id);
 				getPlayerStatus(room);
@@ -214,9 +217,46 @@ export default function GameScreen(props) {
 		}
 	}, [user, username]);
 
+	function interpolateColor(color1, color2, factor) {
+		if (arguments.length < 3) {
+			factor = 0.5;
+		}
+		var result = color1.slice();
+		for (var i = 0; i < 3; i++) {
+			result[i] = Math.round(
+				result[i] + factor * (color2[i] - color1[i])
+			);
+		}
+		return result;
+	}
+	// My function to interpolate between two colors completely, returning an array
+	function interpolateColors(color1, color2, steps) {
+		var stepFactor = 1 / (steps - 1),
+			interpolatedColorArray = [];
+
+		color1 = color1.match(/\d+/g).map(Number);
+		color2 = color2.match(/\d+/g).map(Number);
+
+		for (var i = 0; i < steps; i++) {
+			interpolatedColorArray.push(
+				interpolateColor(color1, color2, stepFactor * i)
+			);
+		}
+
+		console.log(interpolatedColorArray);
+
+		return interpolatedColorArray;
+	}
+
 	async function getPontuations(current_game) {
 		await get('/game/pontuations', { game: current_game })
 			.then(response => {
+				response.data.pontuations.sort((a, b) => {
+					if (a.points > b.points) {
+						return -1;
+					}
+					return 1;
+				});
 				setPontuations(response.data.pontuations);
 			})
 			.catch(error => {
@@ -277,6 +317,13 @@ export default function GameScreen(props) {
 			.then(async response => {
 				setLoading(false);
 				setPlayers(response.data.game_players);
+				setColorArray(
+					interpolateColors(
+						'rgb(30, 200, 30)',
+						'rgb(200, 20, 20)',
+						response.data.game_players.length
+					)
+				);
 			})
 			.catch(error => {
 				console.log(error);
@@ -309,6 +356,7 @@ export default function GameScreen(props) {
 					response.data.current_game.status === 'in game'
 				) {
 					setMaxBets(response.data.round.roundNumber);
+
 					if (response.data.bet) {
 						setAlreadyBet(true);
 					} else {
@@ -349,8 +397,8 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<AdMobBanner
 					bannerSize='fullBanner'
-					adUnitID={AD_MOB_UNIT_ID} // Test ID, Replace with your-admob-unit-id
-					servePersonalizedAds // true or false
+					adUnitID={AD_MOB_UNIT_ID}
+					servePersonalizedAds
 					bannerSize={'smartBannerLandscape'}
 				/>
 			)}
@@ -451,28 +499,30 @@ export default function GameScreen(props) {
 			)}
 			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
 				{gameState && gameState === 'in queue' && (
-					<View style={styles.container}>
-						<View style={styles.row}>
-							<Text
-								style={{
-									fontSize: 30,
-									fontWeight: 'bold',
-									color: '#f1f1f1'
-								}}>
-								Players
-							</Text>
+					<View style={[styles.container, { alignItems: 'center' }]}>
+						<View>
+							<View style={styles.row}>
+								<Text
+									style={{
+										fontSize: 30,
+										fontWeight: 'bold',
+										color: '#f1f1f1'
+									}}>
+									Players
+								</Text>
+							</View>
+							{players &&
+								players.length !== 0 &&
+								players.map((p, i) => {
+									return (
+										<View style={styles.row} key={i}>
+											<Text style={{ color: '#f1f1f1' }}>
+												{p.player.name}
+											</Text>
+										</View>
+									);
+								})}
 						</View>
-						{players &&
-							players.length !== 0 &&
-							players.map((p, i) => {
-								return (
-									<View style={styles.row} key={i}>
-										<Text style={{ color: '#f1f1f1' }}>
-											{p.player.name}
-										</Text>
-									</View>
-								);
-							})}
 						{user &&
 							game &&
 							game.createdBy &&
@@ -580,7 +630,8 @@ export default function GameScreen(props) {
 				)}
 				{gameState && gameState === 'place bets' && alreadyBet && (
 					<View style={styles.container}>
-						<View style={styles.row}>
+						<View
+							style={[styles.row, { justifyContent: 'center' }]}>
 							<Text
 								style={{
 									fontSize: 25,
@@ -693,7 +744,7 @@ export default function GameScreen(props) {
 						<View
 							style={[
 								{
-									justifyContent: 'space-between',
+									justifyContent: 'space-around',
 									alignItems: 'center',
 									flexDirection: 'column',
 									flex: 1,
@@ -708,7 +759,7 @@ export default function GameScreen(props) {
 										color: '#f1f1f1',
 										marginHorizontal: 10
 									}}>
-									Place your bet
+									Round {maxBets}
 								</Text>
 								<TouchableOpacity
 									style={{
@@ -844,7 +895,14 @@ export default function GameScreen(props) {
 								justifyContent: 'space-between'
 							}
 						]}>
-						<View style={styles.row}>
+						<View
+							style={[
+								styles.row,
+								{
+									justifyContent: 'center',
+									alignItems: 'center'
+								}
+							]}>
 							<Text
 								style={{
 									fontSize: 25,
@@ -852,7 +910,7 @@ export default function GameScreen(props) {
 									color: '#f1f1f1',
 									marginHorizontal: 10
 								}}>
-								In game
+								Round {maxBets}
 							</Text>
 							<TouchableOpacity
 								style={{
@@ -889,6 +947,51 @@ export default function GameScreen(props) {
 								</Text>
 							</TouchableOpacity>
 						</View>
+						{pontuations && (
+							<View
+								style={[
+									styles.row,
+									{
+										justifyContent: 'center',
+										flexWrap: 'wrap',
+										margin: 0
+									}
+								]}>
+								{pontuations &&
+									pontuations.map((pont, i) => {
+										return (
+											<View style={styles.row} key={i}>
+												<Text
+													style={{
+														fontSize: 15,
+														fontWeight: 'bold',
+														color: '#f1f1f1',
+														marginHorizontal: 5
+													}}>
+													{pont.player.name}:{' '}
+												</Text>
+												<Text
+													style={{
+														backgroundColor:
+															'rgb(' +
+															colorArray[i][0] +
+															', ' +
+															colorArray[i][1] +
+															', ' +
+															colorArray[i][2] +
+															')',
+														borderRadius: 20,
+														paddingHorizontal: 5,
+														color: '#f1f1f1',
+														fontWeight: 'bold'
+													}}>
+													{pont.points}
+												</Text>
+											</View>
+										);
+									})}
+							</View>
+						)}
 						<View
 							style={[
 								styles.row,
@@ -1049,9 +1152,9 @@ export default function GameScreen(props) {
 					</View>
 				)}
 				{gameState && gameState === 'finished' && (
-					<View style={styles.container}>
+					<View style={[styles.container, { alignItems: 'center' }]}>
 						{!pontuations && (
-							<View style={styles.row}>
+							<View style={[styles.row]}>
 								<Text
 									style={{
 										fontSize: 25,

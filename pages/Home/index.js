@@ -205,6 +205,7 @@ export default function HomeScreen(props) {
 								Platform.OS === 'web' ? 240 : (width - 45) / 2,
 							borderRadius: 25,
 							marginLeft: Platform.OS === 'web' ? 0 : 15,
+							marginRight: Platform.OS === 'web' ? 10 : null,
 							marginVertical: 10,
 							alignItems: 'center',
 							justifyContent: 'center',
@@ -239,6 +240,7 @@ export default function HomeScreen(props) {
 							width:
 								Platform.OS === 'web' ? 240 : (width - 45) / 2,
 							borderRadius: 25,
+							marginLeft: Platform.OS === 'web' ? 10 : null,
 							marginRight: Platform.OS === 'web' ? 0 : 15,
 							marginVertical: 10,
 							alignItems: 'center',
@@ -273,6 +275,7 @@ export default function HomeScreen(props) {
 						clientId={ANDROID_CLIENT_ID_WEB}
 						buttonText='Logout'
 						onLogoutSuccess={async () => {
+							setLoading(true);
 							if (Platform.OS !== 'web') {
 								await AsyncStorage.removeItem(
 									'@ocean_king:user'
@@ -284,6 +287,7 @@ export default function HomeScreen(props) {
 								localStorage.removeItem('@ocean_king:user');
 								localStorage.removeItem('@ocean_king:username');
 							}
+							setLoading(false);
 							reset({
 								index: 1,
 								routes: [{ name: 'Login' }]
@@ -376,6 +380,7 @@ export default function HomeScreen(props) {
 								flexDirection: 'row'
 							}}
 							onPress={async () => {
+								setLoading(true);
 								if (__DEV__) {
 									console.log('Logout');
 								} else {
@@ -399,6 +404,7 @@ export default function HomeScreen(props) {
 										'@ocean_king:username'
 									);
 								}
+								setLoading(false);
 								reset({
 									index: 1,
 									routes: [{ name: 'Login' }]
