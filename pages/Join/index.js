@@ -8,7 +8,8 @@ import {
 	RefreshControl,
 	ScrollView,
 	AppState,
-	Platform
+	Platform,
+	StatusBar
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;

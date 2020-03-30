@@ -6,7 +6,8 @@ import {
 	Text,
 	Dimensions,
 	Linking,
-	Platform
+	Platform,
+	StatusBar
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
