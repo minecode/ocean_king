@@ -38,18 +38,19 @@ export default function HomeScreen(props) {
 	const { navigate, reset } = props.navigation;
 
 	async function getUser() {
-		let user = null;
+		let user_temp = null;
 		let name = null;
 		if (Platform.OS !== 'web') {
-			user = await AsyncStorage.getItem('@ocean_king:user', null);
+			user_temp = await AsyncStorage.getItem('@ocean_king:user', null);
 			name = await AsyncStorage.getItem('@ocean_king:username', null);
 		} else {
-			user = localStorage.getItem('@ocean_king:user', null);
+			user_temp = localStorage.getItem('@ocean_king:user', null);
 			name = localStorage.getItem('@ocean_king:username', null);
 		}
-
-		if (user != null) {
-			setUser(user);
+		console.log(user_temp);
+		console.log(name);
+		if (user_temp !== null && name !== null) {
+			setUser(user_temp);
 			setUsername(name);
 		} else {
 			reset({ index: 1, routes: [{ name: 'Login' }] });
@@ -294,7 +295,6 @@ export default function HomeScreen(props) {
 							});
 						}}
 						render={renderProps => {
-							console.log(renderProps);
 							return (
 								<View
 									style={[

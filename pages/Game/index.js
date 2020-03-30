@@ -55,18 +55,18 @@ export default function GameScreen(props) {
 	const [colorArray, setColorArray] = useState(null);
 
 	async function getUser() {
-		let user = null;
+		let user_temp = null;
 		let name = null;
 		if (Platform.OS !== 'web') {
-			user = await AsyncStorage.getItem('@ocean_king:user', null);
+			user_temp = await AsyncStorage.getItem('@ocean_king:user', null);
 			name = await AsyncStorage.getItem('@ocean_king:username', null);
 		} else {
-			user = localStorage.getItem('@ocean_king:user', null);
+			user_temp = localStorage.getItem('@ocean_king:user', null);
 			name = localStorage.getItem('@ocean_king:username', null);
 		}
 
-		if (user != null) {
-			setUser(user);
+		if (user_temp != null) {
+			setUser(user_temp);
 			setUsername(name);
 		} else {
 			reset({ index: 1, routes: [{ name: 'Login' }] });
@@ -83,10 +83,12 @@ export default function GameScreen(props) {
 	const handleChange = newState => {
 		console.log(newState);
 		if (socket !== null) {
+			console.log(socket['_callbacks']['$place bets'].length);
 			if (user != null && username != null && room !== null) {
 				getGamePlayers(room);
 			}
 		} else {
+			console.log('no socket');
 			setSocket(io('https://skull-king-game.herokuapp.com'));
 			setRoom(props.route.params.game);
 		}
@@ -229,8 +231,11 @@ export default function GameScreen(props) {
 		}
 		return result;
 	}
-	// My function to interpolate between two colors completely, returning an array
+
 	function interpolateColors(color1, color2, steps) {
+		if (steps === 1) {
+			return [[30, 200, 30]];
+		}
 		var stepFactor = 1 / (steps - 1),
 			interpolatedColorArray = [];
 
@@ -242,9 +247,6 @@ export default function GameScreen(props) {
 				interpolateColor(color1, color2, stepFactor * i)
 			);
 		}
-
-		console.log(interpolatedColorArray);
-
 		return interpolatedColorArray;
 	}
 

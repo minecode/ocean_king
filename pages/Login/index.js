@@ -293,14 +293,14 @@ export default function LoginScreen(props) {
 	}
 
 	async function getUser() {
-		let user = null;
+		let user_temp = null;
 		if (Platform.OS !== 'web') {
-			user = await AsyncStorage.getItem('@ocean_king:user', null);
+			user_temp = await AsyncStorage.getItem('@ocean_king:user', null);
 		} else {
-			user = localStorage.getItem('@ocean_king:user', null);
+			user_temp = localStorage.getItem('@ocean_king:user', null);
 		}
 
-		if (user != null) {
+		if (user_temp != null) {
 			reset({ index: 1, routes: [{ name: 'Home' }] });
 		}
 	}
