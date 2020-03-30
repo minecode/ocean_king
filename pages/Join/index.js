@@ -123,6 +123,7 @@ export default function JoinScreen(props) {
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={loading}
+					deviceHeight={height + StatusBar.currentHeight}
 					coverScreen={false}
 					backdropColor={'#212121'}
 					backdropOpacity={0.8}>

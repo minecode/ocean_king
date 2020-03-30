@@ -7,7 +7,9 @@ import {
 	Dimensions,
 	ScrollView,
 	AppState,
-	Platform
+	Platform,
+	StatusBar,
+	RefreshControl
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
@@ -34,7 +36,6 @@ export default function GameScreen(props) {
 	const [game, setGame] = useState(null);
 	const [players, setPlayers] = useState(null);
 	const [cards, setCards] = useState(null);
-	const [tempCards, setTempCards] = useState(null);
 	const [pontuations, setPontuations] = useState(null);
 	const [username, setUsername] = useState(null);
 	const [loading, setLoading] = useState(false);
@@ -43,10 +44,9 @@ export default function GameScreen(props) {
 	const [displayWinner, setDisplayWinner] = useState(null);
 	const [currentPlayer, setCurrentPlayer] = useState(null);
 	const [alreadyBet, setAlreadyBet] = useState(false);
-	const { navigate, reset } = props.navigation;
+	const { reset } = props.navigation;
 	const [betsState, setBetsState] = useState(null);
 	const [tempResults, setTempResults] = useState(null);
-	const [tempBetsState, setTempBetsState] = useState(null);
 	const [playedCardsState, setPlayedCardsState] = useState(null);
 	const [tempCard, setTempCard] = useState(null);
 	const [choiceVisible, setChoiceVisible] = useState(false);
@@ -54,61 +54,14 @@ export default function GameScreen(props) {
 	const [room, setRoom] = useState(null);
 	const [colorArray, setColorArray] = useState(null);
 
-	async function getUser() {
-		let user_temp = null;
-		let name = null;
-		if (Platform.OS !== 'web') {
-			user_temp = await AsyncStorage.getItem('@ocean_king:user', null);
-			name = await AsyncStorage.getItem('@ocean_king:username', null);
-		} else {
-			user_temp = localStorage.getItem('@ocean_king:user', null);
-			name = localStorage.getItem('@ocean_king:username', null);
-		}
-
-		if (user_temp != null) {
-			setUser(user_temp);
-			setUsername(name);
-		} else {
-			reset({ index: 1, routes: [{ name: 'Login' }] });
-		}
-	}
-
 	useEffect(() => {
+		setLoading(true);
 		getUser();
 		if (Platform.OS !== 'web') {
 			setTestDeviceIDAsync('EMULATOR');
 		}
+		setLoading(false);
 	}, []);
-
-	const handleChange = newState => {
-		console.log(newState);
-		if (socket !== null) {
-			console.log(socket['_callbacks']['$place bets'].length);
-			if (user != null && username != null && room !== null) {
-				getGamePlayers(room);
-			}
-		} else {
-			console.log('no socket');
-			setSocket(io('https://skull-king-game.herokuapp.com'));
-			setRoom(props.route.params.game);
-		}
-	};
-
-	useEffect(() => {
-		if (!cards && tempCards) {
-			let temp2 = tempCards;
-			setTempCards(null);
-			setCards(temp2);
-		}
-	}, [cards]);
-
-	useEffect(() => {
-		if (!betsState && tempBetsState && tempResults) {
-			let temp3 = tempBetsState;
-			setTempBetsState(null);
-			setBetsState(temp3);
-		}
-	}, [betsState, tempBetsState, tempResults]);
 
 	useEffect(() => {
 		if (game && gameState && room) {
@@ -117,10 +70,10 @@ export default function GameScreen(props) {
 				getPontuations(room);
 			} else if (gameState === 'in game') {
 				setAlreadyBet(false);
-				getPontuations(room);
 				getPlayerCards(room);
 				getCurrentPlayer(room);
 				getPlayerStatus(room);
+				getPontuations(room);
 			} else if (gameState === 'finished') {
 				getPontuations(room);
 			}
@@ -142,18 +95,18 @@ export default function GameScreen(props) {
 			getGamePlayers(room);
 			// getGame(room);
 			socket.on('user join', function(user) {
-				console.log(user + ' join your room');
+				// console.log(user + ' join your room');
 				getGamePlayers(room);
 			});
 			socket.on('user leave', function(user) {
-				console.log(user + ' leave your room');
+				// console.log(user + ' leave your room');
 				getGamePlayers(room);
 			});
 			socket.on('place bets', function(max) {
 				setCurrentPlayer(null);
 				setMaxBets(max);
 				getGame(room);
-				console.log('place bets');
+				// console.log('place bets');
 				setDisplayWinner(null);
 				setCurrentPlayer(null);
 				// getPlayerCards(room);
@@ -163,30 +116,30 @@ export default function GameScreen(props) {
 				setGameState('in game');
 			});
 			socket.on('new turn', function(player) {
-				console.log('first play: ' + player.name);
+				// console.log('first play: ' + player.name);
 				setDisplayWinner(null);
 				setPlayedCardsState(null);
 				setCurrentPlayer(player._id);
 				getPlayerStatus(room);
 			});
 			socket.on('next play', function(player) {
-				console.log('next play: ' + player.player.name);
+				// console.log('next play: ' + player.player.name);
 				setCurrentPlayer(player.player._id);
 				getPlayerStatus(room);
 			});
 			socket.on('turn winner', function(player) {
-				console.log('winner: ' + player.name);
+				// console.log('winner: ' + player.name);
 				setDisplayWinner(player.name);
 				setCurrentPlayer(null);
 			});
 			socket.on('turn finish', function() {
-				console.log('turn finish');
+				// console.log('turn finish');
 				// getPlayerStatus(props.route.params.game);
 				// setDisplayWinner(null);
 				setCurrentPlayer(null);
 			});
 			socket.on('game finished', function() {
-				console.log('game finished');
+				// console.log('game finished');
 				setGameState('finished');
 				setDisplayWinner(null);
 				setCurrentPlayer(null);
@@ -197,27 +150,79 @@ export default function GameScreen(props) {
 
 			socket.emit('set nickname', username);
 			socket.emit('join room', room, user);
-		} else if (socket === null) {
-			setSocket(io('https://skull-king-game.herokuapp.com'));
-			setRoom(props.route.params.game);
 		}
 	}, [socket, room]);
 
 	useEffect(() => {
-		if (user != null && username != null) {
+		if (user !== null && username !== null) {
 			if (socket === null) {
 				// setSocket(io('http://192.168.1.68:3000'));
-				setSocket(io('https://skull-king-game.herokuapp.com'));
+				setSocket(
+					io('https://skull-king-game.herokuapp.com', {
+						transports: ['websocket'],
+						autoConnect: true
+					})
+				);
 				setRoom(props.route.params.game);
+
+				AppState.addEventListener('change', handleChange);
+
+				return () => {
+					AppState.removeEventListener('change', handleChange);
+				};
+			} else {
+				AppState.addEventListener('change', handleChange);
+
+				setLoading(false);
+				return () => {
+					AppState.removeEventListener('change', handleChange);
+				};
 			}
-
-			AppState.addEventListener('change', handleChange);
-
-			return () => {
-				AppState.removeEventListener('change', handleChange);
-			};
 		}
 	}, [user, username]);
+
+	async function getUser() {
+		let user_temp = null;
+		let name = null;
+		if (Platform.OS !== 'web') {
+			user_temp = await AsyncStorage.getItem('@ocean_king:user', null);
+			name = await AsyncStorage.getItem('@ocean_king:username', null);
+		} else {
+			user_temp = localStorage.getItem('@ocean_king:user', null);
+			name = localStorage.getItem('@ocean_king:username', null);
+		}
+
+		if (user_temp != null) {
+			setUser(user_temp);
+			setUsername(name);
+		} else {
+			setLoading(false);
+			reset({ index: 1, routes: [{ name: 'Login' }] });
+		}
+	}
+
+	async function handleChange(newState) {
+		setLoading(true);
+		if (newState === 'active') {
+			if (socket !== null) {
+				if (user !== null && username !== null && room !== null) {
+					getGamePlayers(room);
+				}
+			} else {
+				if (user !== null && username !== null && room !== null) {
+					setSocket(
+						io('https://skull-king-game.herokuapp.com', {
+							transports: ['websocket'],
+							autoConnect: true
+						})
+					);
+					setRoom(props.route.params.game);
+				}
+			}
+		}
+
+		setLoading(false);
+	}
 
 	function interpolateColor(color1, color2, factor) {
 		if (arguments.length < 3) {
@@ -260,9 +265,11 @@ export default function GameScreen(props) {
 					return 1;
 				});
 				setPontuations(response.data.pontuations);
+				setLoading(false);
 			})
 			.catch(error => {
-				console.log(error);
+				setLoading(false);
+				//console.log(error);
 			});
 	}
 
@@ -272,7 +279,7 @@ export default function GameScreen(props) {
 				setCurrentPlayer(response.data.player._id);
 			})
 			.catch(error => {
-				console.log(error);
+				//console.log(error);
 			});
 	}
 
@@ -282,7 +289,8 @@ export default function GameScreen(props) {
 				setCards(response.data.cards.cards);
 			})
 			.catch(error => {
-				console.log(error);
+				setLoading(false);
+				//console.log(error);
 			});
 	}
 
@@ -290,13 +298,13 @@ export default function GameScreen(props) {
 		await get('/game/playersStatus', { game: current_game })
 			.then(response => {
 				setBetsState(response.data.bet);
-				setTempBetsState(response.data.bet);
-				setBetsState(null);
+				// setTempBetsState(response.data.bet);
+				// setBetsState(null);
 				setPlayedCardsState(response.data.played_cards);
 				setTempResults(response.data.temp_results);
 			})
 			.catch(error => {
-				console.log(error);
+				//console.log(error);
 			});
 	}
 
@@ -307,17 +315,16 @@ export default function GameScreen(props) {
 			card: card
 		})
 			.then(response => {
-				setLoading(false);
+				setCards(response.data.new_cards.cards);
 			})
 			.catch(error => {
-				console.log(error);
+				//console.log(error);
 			});
 	}
 
 	async function getGamePlayers(game) {
 		await get('/game/gamePlayers', { game: game })
 			.then(async response => {
-				setLoading(false);
 				setPlayers(response.data.game_players);
 				setColorArray(
 					interpolateColors(
@@ -328,7 +335,8 @@ export default function GameScreen(props) {
 				);
 			})
 			.catch(error => {
-				console.log(error);
+				setLoading(false);
+				//console.log(error);
 			});
 	}
 
@@ -350,7 +358,6 @@ export default function GameScreen(props) {
 	async function getGame(current_game) {
 		await get('/game/current', { game: current_game, user: user })
 			.then(async response => {
-				setLoading(false);
 				setGame(response.data.current_game);
 				setGameState(response.data.current_game.status);
 				if (
@@ -368,7 +375,7 @@ export default function GameScreen(props) {
 			})
 			.catch(error => {
 				setLoading(false);
-				console.log(error);
+				//console.log(error);
 			});
 	}
 
@@ -378,7 +385,7 @@ export default function GameScreen(props) {
 				setLoading(false);
 			})
 			.catch(error => {
-				console.log(error);
+				//console.log(error);
 				setLoading(false);
 			});
 	}
@@ -389,9 +396,27 @@ export default function GameScreen(props) {
 				setAlreadyBet(true);
 			})
 			.catch(error => {
-				console.log(error);
+				//console.log(error);
 			});
 		return;
+	}
+
+	async function onRefresh() {
+		if (socket !== null) {
+			if (user != null && username != null && room !== null) {
+				getGamePlayers(room);
+			}
+		} else {
+			if (user !== null && username !== null && room !== null) {
+				setSocket(
+					io('https://skull-king-game.herokuapp.com', {
+						transports: ['websocket'],
+						autoConnect: true
+					})
+				);
+				setRoom(props.route.params.game);
+			}
+		}
 	}
 
 	return (
@@ -408,6 +433,7 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={loading}
+					deviceHeight={height + StatusBar.currentHeight}
 					coverScreen={false}
 					backdropColor={'#212121'}
 					backdropOpacity={0.8}>
@@ -417,7 +443,7 @@ export default function GameScreen(props) {
 							alignItems: 'center',
 							justifyContent: 'center'
 						}}>
-						<ActivityIndicator size='large' color='#526b78' />
+						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
 					</View>
 				</Modal>
@@ -425,7 +451,8 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={displayWinner !== null}
-					coverScreen={true}
+					coverScreen={false}
+					deviceHeight={height + StatusBar.currentHeight}
 					backdropColor={'#212121'}
 					backdropOpacity={0.8}>
 					<View
@@ -449,7 +476,8 @@ export default function GameScreen(props) {
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={choiceVisible}
-					coverScreen={true}
+					coverScreen={false}
+					deviceHeight={height + StatusBar.currentHeight}
 					backdropColor={'#212121'}
 					backdropOpacity={0.8}>
 					<View
@@ -467,7 +495,7 @@ export default function GameScreen(props) {
 									{ color: tempCard.color, value: 'f' },
 									game
 								);
-								setCards(null);
+								// setCards(null);
 							}}>
 							<Image
 								source={require('../../assets/cards/f.png')}
@@ -486,7 +514,7 @@ export default function GameScreen(props) {
 									{ color: tempCard.color, value: 'p' },
 									game
 								);
-								setCards(null);
+								// setCards(null);
 							}}>
 							<Image
 								source={require('../../assets/cards/p.png')}
@@ -499,7 +527,14 @@ export default function GameScreen(props) {
 					</View>
 				</Modal>
 			)}
-			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+			<ScrollView
+				contentContainerStyle={{ flexGrow: 1 }}
+				refreshControl={
+					<RefreshControl
+						refreshing={loading}
+						onRefresh={onRefresh}
+					/>
+				}>
 				{gameState && gameState === 'in queue' && (
 					<View style={[styles.container, { alignItems: 'center' }]}>
 						<View>
@@ -1115,7 +1150,7 @@ export default function GameScreen(props) {
 																	1
 																);
 															}
-															setTempCards(temp);
+															// setTempCards(temp);
 
 															if (
 																v.color ===
@@ -1133,7 +1168,7 @@ export default function GameScreen(props) {
 																	v,
 																	game
 																);
-																setCards(null);
+																// setCards(null);
 															}
 														}
 													}}>
@@ -1312,7 +1347,7 @@ export default function GameScreen(props) {
 									{ color: tempCard.color, value: 'f' },
 									game
 								);
-								setCards(null);
+								// setCards(null);
 							}}>
 							<Image
 								source={require('../../assets/cards/f.png')}
@@ -1331,7 +1366,7 @@ export default function GameScreen(props) {
 									{ color: tempCard.color, value: 'p' },
 									game
 								);
-								setCards(null);
+								// setCards(null);
 							}}>
 							<Image
 								source={require('../../assets/cards/p.png')}

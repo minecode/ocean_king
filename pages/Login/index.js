@@ -311,7 +311,7 @@ export default function LoginScreen(props) {
 
 	useEffect(() => {
 		if (__DEV__) {
-			console.log('I am in debug');
+			// console.log('I am in debug');
 		} else {
 			if (Platform.OS !== 'web') {
 				initAsync();
@@ -344,6 +344,7 @@ export default function LoginScreen(props) {
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={loading}
+					deviceHeight={height + StatusBar.currentHeight}
 					coverScreen={false}
 					backdropColor={'#212121'}
 					backdropOpacity={0.8}>

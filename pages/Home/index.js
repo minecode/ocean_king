@@ -47,8 +47,6 @@ export default function HomeScreen(props) {
 			user_temp = localStorage.getItem('@ocean_king:user', null);
 			name = localStorage.getItem('@ocean_king:username', null);
 		}
-		console.log(user_temp);
-		console.log(name);
 		if (user_temp !== null && name !== null) {
 			setUser(user_temp);
 			setUsername(name);
@@ -142,6 +140,7 @@ export default function HomeScreen(props) {
 			{Platform.OS !== 'web' && (
 				<Modal
 					isVisible={loading}
+					deviceHeight={height + StatusBar.currentHeight}
 					coverScreen={false}
 					backdropColor={'#212121'}
 					backdropOpacity={0.8}>
