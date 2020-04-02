@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/ocean_king/static/js/app.6e9bed05.chunk.js",
-    "app.js.map": "/ocean_king/static/js/app.6e9bed05.chunk.js.map",
-    "runtime~app.js": "/ocean_king/static/js/runtime~app.083f480d.js",
-    "runtime~app.js.map": "/ocean_king/static/js/runtime~app.083f480d.js.map",
-    "static/js/2.22a8ceaa.chunk.js": "/ocean_king/static/js/2.22a8ceaa.chunk.js",
-    "static/js/2.22a8ceaa.chunk.js.map": "/ocean_king/static/js/2.22a8ceaa.chunk.js.map",
+    "app.js": "/ocean_king/static/js/app.7fcade98.chunk.js",
+    "app.js.map": "/ocean_king/static/js/app.7fcade98.chunk.js.map",
+    "runtime~app.js": "/ocean_king/static/js/runtime~app.c0712df1.js",
+    "runtime~app.js.map": "/ocean_king/static/js/runtime~app.c0712df1.js.map",
+    "static/js/2.cef1fe2a.chunk.js": "/ocean_king/static/js/2.cef1fe2a.chunk.js",
+    "static/js/2.cef1fe2a.chunk.js.map": "/ocean_king/static/js/2.cef1fe2a.chunk.js.map",
     "fonts/AntDesign.ttf": "/ocean_king/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/ocean_king/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/ocean_king/./fonts/Feather.ttf",
@@ -63,8 +63,8 @@
     "static/media/yellow.jpg": "/ocean_king/static/media/yellow.6cbb130b.jpg"
   },
   "entrypoints": [
-    "static/js/runtime~app.083f480d.js",
-    "static/js/2.22a8ceaa.chunk.js",
-    "static/js/app.6e9bed05.chunk.js"
+    "static/js/runtime~app.c0712df1.js",
+    "static/js/2.cef1fe2a.chunk.js",
+    "static/js/app.7fcade98.chunk.js"
   ]
 }

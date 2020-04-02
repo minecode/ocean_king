@@ -1,12 +1,11 @@
 {
   "background_color": "#212121",
-  "dir": "auto",
   "display": "standalone",
   "lang": "en",
   "name": "Ocean King",
-  "orientation": "portrait",
   "short_name": "Ocean King",
-  "start_url": ".",
+  "start_url": "/?utm_source=web_app_manifest",
+  "orientation": "portrait",
   "related_applications": [
     {
       "platform": "play",
