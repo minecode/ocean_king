@@ -294,6 +294,25 @@ export default function HomeScreen(props) {
 								routes: [{ name: 'Login' }]
 							});
 						}}
+						onLogoutError={async () => {
+							setLoading(true);
+							if (Platform.OS !== 'web') {
+								await AsyncStorage.removeItem(
+									'@ocean_king:user'
+								);
+								await AsyncStorage.removeItem(
+									'@ocean_king:username'
+								);
+							} else {
+								localStorage.removeItem('@ocean_king:user');
+								localStorage.removeItem('@ocean_king:username');
+							}
+							setLoading(false);
+							reset({
+								index: 1,
+								routes: [{ name: 'Login' }]
+							});
+						}}
 						render={renderProps => {
 							return (
 								<View
