@@ -34,6 +34,7 @@ export default function HomeScreen(props) {
 	const [user, setUser] = useState(null);
 	const [username, setUsername] = useState(null);
 	const [error, setError] = useState(false);
+	const [cleanStorage, setCleanStorage] = useState(false);
 	const { height, width } = Dimensions.get('window');
 
 	const { navigate, reset } = props.navigation;
@@ -294,7 +295,7 @@ export default function HomeScreen(props) {
 								routes: [{ name: 'Login' }]
 							});
 						}}
-						onLogoutError={async () => {
+						onFailure={async () => {
 							setLoading(true);
 							if (Platform.OS !== 'web') {
 								await AsyncStorage.removeItem(
@@ -314,6 +315,11 @@ export default function HomeScreen(props) {
 							});
 						}}
 						render={renderProps => {
+							if (renderProps.disabled) {
+								setCleanStorage(true);
+							} else {
+								setCleanStorage(false);
+							}
 							return (
 								<View
 									style={[
@@ -321,7 +327,10 @@ export default function HomeScreen(props) {
 										{
 											marginHorizontal: 0,
 											marginTop: 20,
-											justifyContent: 'center'
+											justifyContent: 'center',
+											display: renderProps.disabled
+												? 'none'
+												: 'flex'
 										}
 									]}>
 									<TouchableOpacity
@@ -367,6 +376,74 @@ export default function HomeScreen(props) {
 							);
 						}}
 					/>
+				)}
+				{cleanStorage && (
+					<View
+						style={[
+							styles.row,
+							{
+								marginHorizontal: 0,
+								marginTop: 20,
+								justifyContent: 'center'
+							}
+						]}>
+						<TouchableOpacity
+							style={{
+								backgroundColor: '#142850',
+								height: 50,
+								width: Platform.OS === 'web' ? 500 : width - 30,
+								borderRadius: 25,
+								marginLeft: 5,
+								marginRight: 5,
+								marginVertical: 10,
+								alignItems: 'center',
+								justifyContent: 'center',
+								shadowOffset: {
+									width: 0,
+									height: 1
+								},
+								shadowOpacity: 0.8,
+								shadowRadius: 2,
+								elevation: 5,
+								flexDirection: 'row'
+							}}
+							onPress={async () => {
+								setLoading(true);
+								if (Platform.OS !== 'web') {
+									await AsyncStorage.removeItem(
+										'@ocean_king:user'
+									);
+									await AsyncStorage.removeItem(
+										'@ocean_king:username'
+									);
+								} else {
+									localStorage.removeItem('@ocean_king:user');
+									localStorage.removeItem(
+										'@ocean_king:username'
+									);
+								}
+								setLoading(false);
+								reset({
+									index: 1,
+									routes: [{ name: 'Login' }]
+								});
+							}}>
+							<Icon
+								name='sign-out'
+								color={'white'}
+								type='font-awesome'
+								iconStyle={{ margin: 10 }}
+							/>
+							<Text
+								style={{
+									color: 'white',
+									margin: 5,
+									fontWeight: 'bold'
+								}}>
+								logout
+							</Text>
+						</TouchableOpacity>
+					</View>
 				)}
 				{Platform.OS !== 'web' && (
 					<View
@@ -466,7 +543,7 @@ export default function HomeScreen(props) {
 					}
 				]}>
 				<Text style={{ color: '#a1a1a1' }}>
-					{Platform.OS === 'web' && 'web'} v202003301845
+					{Platform.OS === 'web' && 'web'} v202004021440
 				</Text>
 			</View>
 
