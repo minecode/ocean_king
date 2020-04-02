@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "716d4b53eab591456a0f",
-    "url": "/ocean_king/static/js/app.7fcade98.chunk.js"
+    "revision": "58ae7e6fbc13f08fe9ef",
+    "url": "/ocean_king/static/js/app.b57a1775.chunk.js"
   },
   {
     "revision": "fdd79c1ab7c6c32206a6",
@@ -208,12 +208,12 @@ self.__precacheManifest = [
     "url": "/ocean_king/static/media/binary.0251c634.jpg"
   },
   {
-    "revision": "48c7ed4e7da9792af288a60d7242d615",
-    "url": "/ocean_king/expo-service-worker.js"
-  },
-  {
     "revision": "d0c694b562b2208635f250762cd7fc79",
     "url": "/ocean_king/serve.json"
+  },
+  {
+    "revision": "48c7ed4e7da9792af288a60d7242d615",
+    "url": "/ocean_king/expo-service-worker.js"
   },
   {
     "revision": "11a7f2d96f84fe8e9f93954ce1a598f6",
@@ -228,7 +228,7 @@ self.__precacheManifest = [
     "url": "/ocean_king/favicon-32.png"
   },
   {
-    "revision": "fe49023c60f60fa3c946d360075ae8df",
+    "revision": "ddab66d2ba4accf4ae366e96d3764dc0",
     "url": "/ocean_king/index.html"
   },
   {
