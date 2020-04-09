@@ -11,47 +11,58 @@ import { Image } from 'react-native-elements';
 
 export default function Card(props) {
 	let cards = {
-		red: require('../../assets/cards/red.jpg'),
-		blue: require('../../assets/cards/blue.jpg'),
-		yellow: require('../../assets/cards/yellow.jpg'),
-		black: require('../../assets/cards/black.jpg'),
-		flag1: require('../../assets/cards/flag1.jpg'),
-		flag2: require('../../assets/cards/flag2.jpg'),
-		flag3: require('../../assets/cards/flag3.jpg'),
-		flag4: require('../../assets/cards/flag4.jpg'),
-		flag5: require('../../assets/cards/flag5.jpg'),
-		m1: require('../../assets/cards/m1.jpg'),
-		m2: require('../../assets/cards/m2.jpg'),
-		p1: require('../../assets/cards/p1.jpg'),
-		p2: require('../../assets/cards/p2.jpg'),
-		p3: require('../../assets/cards/p3.jpg'),
-		p4: require('../../assets/cards/p4.jpg'),
-		p5: require('../../assets/cards/p5.jpg'),
-		sk: require('../../assets/cards/sk.jpg'),
-		0: require('../../assets/cards/v0.png'),
-		1: require('../../assets/cards/v1.png'),
-		2: require('../../assets/cards/v2.png'),
-		3: require('../../assets/cards/v3.png'),
-		4: require('../../assets/cards/v4.png'),
-		5: require('../../assets/cards/v5.png'),
-		6: require('../../assets/cards/v6.png'),
-		7: require('../../assets/cards/v7.png'),
-		8: require('../../assets/cards/v8.png'),
-		9: require('../../assets/cards/v9.png'),
-		10: require('../../assets/cards/v10.png'),
-		11: require('../../assets/cards/v11.png'),
-		12: require('../../assets/cards/v12.png'),
-		13: require('../../assets/cards/v13.png'),
+		red: require('../../assets/cards/cards/red.png'),
+		blue: require('../../assets/cards/cards/blue.png'),
+		yellow: require('../../assets/cards/cards/yellow.png'),
+		black: require('../../assets/cards/cards/black.png'),
+		flag1: require('../../assets/cards/cards/flag.png'),
+		flag2: require('../../assets/cards/cards/flag.png'),
+		flag3: require('../../assets/cards/cards/flag.png'),
+		flag4: require('../../assets/cards/cards/flag.png'),
+		flag5: require('../../assets/cards/cards/flag.png'),
+		m1: require('../../assets/cards/cards/mermaid_1.png'),
+		// m1: require('../../assets/cards/m1.jpg'),
+		m2: require('../../assets/cards/cards/mermaid_2.png'),
+		// m2: require('../../assets/cards/m2.jpg'),
+		p1: require('../../assets/cards/cards/pirate_1.png'),
+		// p1: require('../../assets/cards/p1.jpg'),
+		p2: require('../../assets/cards/cards/pirate_2.png'),
+		// p2: require('../../assets/cards/p2.jpg'),
+		p3: require('../../assets/cards/cards/pirate_3.png'),
+		// p3: require('../../assets/cards/p3.jpg'),
+		p4: require('../../assets/cards/cards/pirate_1.png'),
+		// p4: require('../../assets/cards/p4.jpg'),
+		p5: require('../../assets/cards/cards/pirate_2.png'),
+		// p5: require('../../assets/cards/p5.jpg'),
+		sk: require('../../assets/cards/cards/king.png'),
+		// sk: require('../../assets/cards/sk.jpg'),
+		1: require('../../assets/cards/cards/v1.png'),
+		2: require('../../assets/cards/cards/v2.png'),
+		3: require('../../assets/cards/cards/v3.png'),
+		4: require('../../assets/cards/cards/v4.png'),
+		5: require('../../assets/cards/cards/v5.png'),
+		6: require('../../assets/cards/cards/v6.png'),
+		7: require('../../assets/cards/cards/v7.png'),
+		8: require('../../assets/cards/cards/v8.png'),
+		9: require('../../assets/cards/cards/v9.png'),
+		10: require('../../assets/cards/cards/v10.png'),
+		11: require('../../assets/cards/cards/v11.png'),
+		12: require('../../assets/cards/cards/v12.png'),
+		13: require('../../assets/cards/cards/v13.png'),
 		back: require('../../assets/cards/back.png'),
-		binary: require('../../assets/cards/binary.jpg'),
-		f: require('../../assets/cards/f.png'),
-		p: require('../../assets/cards/p.png')
+		binary: require('../../assets/cards/cards/scary_mary.png'),
+		// binary: require('../../assets/cards/binary.jpg'),
+		f: require('../../assets/cards/cards/f.png'),
+		// f: require('../../assets/cards/f.png'),
+		p: require('../../assets/cards/cards/p.png'),
+		// p: require('../../assets/cards/p.png'),
 	};
 	const opacity = props.overlay ? 0.3 : 1.0;
 	return (
 		<Image
 			source={cards[props.color]}
-			style={{ width: 80, height: 130 }}
+			style={{ width: 75.9, height: 124.2 }}
+			// style={{ width: 80, height: 130 }}
 			containerStyle={{ opacity: opacity }}
 			placeholderStyle={{ backgroundColor: 'transparent' }}>
 			{(props.color === 'red' ||
@@ -61,73 +72,37 @@ export default function Card(props) {
 				<View>
 					<View
 						style={{
-							marginLeft: 3.5,
-							marginTop: 3.5,
-							position: 'absolute'
+							marginLeft: 2.5,
+							marginTop: 3,
+							position: 'absolute',
 						}}>
 						<Image
 							source={cards[props.value]}
 							style={{
-								width: 18,
-								height: 18
+								width: 20.3,
+								height: 20.3,
 							}}
 							containerStyle={{ opacity: opacity }}
 							placeholderStyle={{
-								backgroundColor: 'transparent'
+								backgroundColor: 'transparent',
 							}}
 						/>
 					</View>
 					<View
 						style={{
-							marginLeft: 58,
-							marginTop: 3.5,
-							position: 'absolute'
+							marginLeft: 54.2,
+							marginTop: 102,
+							position: 'absolute',
 						}}>
 						<Image
 							source={cards[props.value]}
 							style={{
-								width: 18,
-								height: 18
+								width: 20.3,
+								height: 20.3,
 							}}
 							containerStyle={{ opacity: opacity }}
 							placeholderStyle={{
-								backgroundColor: 'transparent'
-							}}
-						/>
-					</View>
-					<View
-						style={{
-							marginLeft: 58,
-							marginTop: 108,
-							position: 'absolute'
-						}}>
-						<Image
-							source={cards[props.value]}
-							style={{
-								width: 18,
-								height: 18
-							}}
-							containerStyle={{ opacity: opacity }}
-							placeholderStyle={{
-								backgroundColor: 'transparent'
-							}}
-						/>
-					</View>
-					<View
-						style={{
-							marginLeft: 3.5,
-							marginTop: 108,
-							position: 'absolute'
-						}}>
-						<Image
-							source={cards[props.value]}
-							style={{
-								width: 18,
-								height: 18
-							}}
-							containerStyle={{ opacity: opacity }}
-							placeholderStyle={{
-								backgroundColor: 'transparent'
+								backgroundColor: 'transparent',
 							}}
 						/>
 					</View>
@@ -137,73 +112,37 @@ export default function Card(props) {
 				<View>
 					<View
 						style={{
-							marginLeft: 2,
-							marginTop: 2,
-							position: 'absolute'
+							marginLeft: 2.5,
+							marginTop: 3,
+							position: 'absolute',
 						}}>
 						<Image
 							source={cards[props.value]}
 							style={{
-								width: 22,
-								height: 22
+								width: 20.3,
+								height: 20.3,
 							}}
 							containerStyle={{ opacity: opacity }}
 							placeholderStyle={{
-								backgroundColor: 'transparent'
+								backgroundColor: 'transparent',
 							}}
 						/>
 					</View>
 					<View
 						style={{
-							marginLeft: 56,
-							marginTop: 2,
-							position: 'absolute'
+							marginLeft: 54.2,
+							marginTop: 102,
+							position: 'absolute',
 						}}>
 						<Image
 							source={cards[props.value]}
 							style={{
-								width: 22,
-								height: 22
+								width: 20.3,
+								height: 20.3,
 							}}
 							containerStyle={{ opacity: opacity }}
 							placeholderStyle={{
-								backgroundColor: 'transparent'
-							}}
-						/>
-					</View>
-					<View
-						style={{
-							marginLeft: 56,
-							marginTop: 106,
-							position: 'absolute'
-						}}>
-						<Image
-							source={cards[props.value]}
-							style={{
-								width: 22,
-								height: 22
-							}}
-							containerStyle={{ opacity: opacity }}
-							placeholderStyle={{
-								backgroundColor: 'transparent'
-							}}
-						/>
-					</View>
-					<View
-						style={{
-							marginLeft: 2,
-							marginTop: 106,
-							position: 'absolute'
-						}}>
-						<Image
-							source={cards[props.value]}
-							style={{
-								width: 22,
-								height: 22
-							}}
-							containerStyle={{ opacity: opacity }}
-							placeholderStyle={{
-								backgroundColor: 'transparent'
+								backgroundColor: 'transparent',
 							}}
 						/>
 					</View>

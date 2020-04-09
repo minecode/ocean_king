@@ -9,7 +9,7 @@ import {
 	ScrollView,
 	AppState,
 	Platform,
-	StatusBar
+	StatusBar,
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
@@ -51,34 +51,33 @@ export default function JoinScreen(props) {
 
 	async function joinGame(id) {
 		await post('/game/join', { user: user, game: id })
-			.then(async response => {
+			.then(async (response) => {
 				setLoading(false);
 				reset({
 					index: 1,
 					routes: [
 						{
 							name: 'Game',
-							params: { game: id }
-						}
-					]
+							params: { game: id },
+						},
+					],
 				});
 			})
-			.catch(error => {
+			.catch((error) => {
 				setLoading(false);
 			});
 	}
 
 	useEffect(() => {
+		setLoading(true);
 		getUser();
 		if (Platform.OS !== 'web') {
 			setTestDeviceIDAsync('EMULATOR');
 		}
 	}, []);
 
-	const handleChange = newState => {
+	const handleChange = (newState) => {
 		if (newState === 'active') {
-			console.log('!');
-			console.log(user, username);
 			if (user != null && username != null) {
 				getGames();
 			}
@@ -98,8 +97,7 @@ export default function JoinScreen(props) {
 
 	async function getGames() {
 		await get('/game/', { user: user })
-			.then(async response => {
-				console.log(response.data);
+			.then(async (response) => {
 				setLoading(false);
 				if (response.data.games.length !== 0) {
 					setGames(response.data.games);
@@ -107,8 +105,8 @@ export default function JoinScreen(props) {
 					setGames(null);
 				}
 			})
-			.catch(error => {
-				console.log(error);
+			.catch((error) => {
+				// console.log(error);
 				setLoading(false);
 			});
 	}
@@ -121,24 +119,24 @@ export default function JoinScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			{Platform.OS !== 'web' && (
-				<Modal
-					isVisible={loading}
-					deviceHeight={height + StatusBar.currentHeight}
-					coverScreen={false}
-					backdropColor={'#212121'}
-					backdropOpacity={0.8}>
-					<View
-						style={{
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'center'
-						}}>
-						<ActivityIndicator size='large' color='#f1f1f1' />
-						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
-					</View>
-				</Modal>
-			)}
+			{/* {Platform.OS !== 'web' && (
+				// <Modal
+				// 	isVisible={loading}
+				// 	deviceHeight={height + StatusBar.currentHeight}
+				// 	coverScreen={false}
+				// 	backdropColor={'#212121'}
+				// 	backdropOpacity={0.8}>
+				// 	<View
+				// 		style={{
+				// 			flexDirection: 'row',
+				// 			alignItems: 'center',
+				// 			justifyContent: 'center',
+				// 		}}>
+				// 		<ActivityIndicator size='large' color='#f1f1f1' />
+				// 		<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
+				// 	</View>
+				// </Modal>
+			)} */}
 
 			<ScrollView
 				refreshControl={
@@ -152,15 +150,15 @@ export default function JoinScreen(props) {
 						styles.container,
 						{
 							justifyContent: 'flex-start',
-							marginTop: 0
-						}
+							marginTop: 0,
+						},
 					]}>
 					<View style={styles.row}>
 						<Text
 							style={{
 								fontSize: 30,
 								fontWeight: 'bold',
-								color: '#f1f1f1'
+								color: '#f1f1f1',
 							}}>
 							Games
 						</Text>
@@ -173,7 +171,7 @@ export default function JoinScreen(props) {
 									<Text
 										style={{
 											fontSize: 20,
-											color: '#f1f1f1'
+											color: '#f1f1f1',
 										}}>
 										{g.createdBy.name}
 									</Text>
@@ -189,12 +187,12 @@ export default function JoinScreen(props) {
 											justifyContent: 'center',
 											shadowOffset: {
 												width: 0,
-												height: 1
+												height: 1,
 											},
 											shadowOpacity: 0.8,
 											shadowRadius: 2,
 											elevation: 5,
-											flexDirection: 'row'
+											flexDirection: 'row',
 										}}
 										onPress={async () => {
 											await joinGame(g._id);
@@ -210,7 +208,7 @@ export default function JoinScreen(props) {
 											style={{
 												color: 'white',
 												margin: 10,
-												fontWeight: 'bold'
+												fontWeight: 'bold',
 											}}>
 											Join game
 										</Text>
@@ -229,14 +227,14 @@ export default function JoinScreen(props) {
 							position: 'absolute',
 							alignContent: 'center',
 							justifyContent: 'center',
-							backgroundColor: '#21212180'
-						}
+							backgroundColor: '#21212180',
+						},
 					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
 						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>

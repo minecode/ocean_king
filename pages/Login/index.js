@@ -7,7 +7,7 @@ import {
 	ActivityIndicator,
 	Linking,
 	Platform,
-	StatusBar
+	StatusBar,
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
@@ -18,7 +18,7 @@ import {
 	ANDROID_CLIENT_ID,
 	ANDROID_STANDALONE_APP_CLIENT_ID,
 	ANDROID_CLIENT_ID_WEB,
-	AD_MOB_UNIT_ID
+	AD_MOB_UNIT_ID,
 } from 'react-native-dotenv';
 if (Platform.OS !== 'web') {
 	AsyncStorage = require('react-native').AsyncStorage;
@@ -59,11 +59,11 @@ export default function LoginScreen(props) {
 					androidClientId: String(ANDROID_CLIENT_ID),
 					androidStandaloneAppClientId: String(
 						ANDROID_STANDALONE_APP_CLIENT_ID
-					)
+					),
 				});
 				if (type === 'success') {
 					await post('/auth/googleLogin/', { user })
-						.then(async response => {
+						.then(async (response) => {
 							if (response.data.dataBase_user !== undefined) {
 								if (Platform.OS !== 'web') {
 									await AsyncStorage.setItem(
@@ -109,7 +109,7 @@ export default function LoginScreen(props) {
 							setLoading(false);
 							reset({ index: 1, routes: [{ name: 'Home' }] });
 						})
-						.catch(error => {
+						.catch((error) => {
 							setLoading(false);
 							console.log(error);
 							setLoginError('Authentication fail');
@@ -129,7 +129,7 @@ export default function LoginScreen(props) {
 				if (type === 'success') {
 					setLoading(true);
 					await post('/auth/googleLogin/', { user })
-						.then(async response => {
+						.then(async (response) => {
 							setLoading(false);
 							if (response.data.dataBase_user !== undefined) {
 								if (Platform.OS !== 'web') {
@@ -174,7 +174,7 @@ export default function LoginScreen(props) {
 							}
 							reset({ index: 1, routes: [{ name: 'Home' }] });
 						})
-						.catch(error => {
+						.catch((error) => {
 							setLoading(false);
 							console.log(error);
 							setLoginError('Authentication fail');
@@ -190,20 +190,20 @@ export default function LoginScreen(props) {
 		}
 	};
 
-	const badResponseGoogle = async response => {
+	const badResponseGoogle = async (response) => {
 		console.log(response);
 		setError('Authentication failed');
 	};
 
-	const responseGoogle = async response => {
+	const responseGoogle = async (response) => {
 		await post('/auth/googleLogin/', {
 			user: {
 				email: response.profileObj.email,
 				name: response.profileObj.name,
-				imageURL: response.profileObj.imageUrl
-			}
+				imageURL: response.profileObj.imageUrl,
+			},
 		})
-			.then(async response => {
+			.then(async (response) => {
 				if (response.data.dataBase_user !== undefined) {
 					if (Platform.OS !== 'web') {
 						await AsyncStorage.setItem(
@@ -249,7 +249,7 @@ export default function LoginScreen(props) {
 				setLoading(false);
 				reset({ index: 1, routes: [{ name: 'Home' }] });
 			})
-			.catch(error => {
+			.catch((error) => {
 				setLoading(false);
 				console.log(error);
 				setLoginError('Authentication fail');
@@ -262,7 +262,7 @@ export default function LoginScreen(props) {
 		setLoginUsernameError(null);
 		setLoading(true);
 		await post('/auth/login/', { username: username, password: password })
-			.then(async response => {
+			.then(async (response) => {
 				if (Platform.OS !== 'web') {
 					await AsyncStorage.setItem(
 						'@ocean_king:user',
@@ -286,7 +286,7 @@ export default function LoginScreen(props) {
 				setLoading(false);
 				reset({ index: 1, routes: [{ name: 'Home' }] });
 			})
-			.catch(error => {
+			.catch((error) => {
 				setLoading(false);
 				console.log(error);
 				setLoginError('Authentication fail');
@@ -353,7 +353,7 @@ export default function LoginScreen(props) {
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
 						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
@@ -367,7 +367,7 @@ export default function LoginScreen(props) {
 						source={require('../../assets/ocean_king.png')}
 						style={{
 							width: 200,
-							height: 200
+							height: 200,
 						}}
 						placeholderStyle={{ backgroundColor: 'transparent' }}
 					/>
@@ -378,8 +378,8 @@ export default function LoginScreen(props) {
 							styles.row,
 							{
 								justifyContent: 'center',
-								alignItems: 'center'
-							}
+								alignItems: 'center',
+							},
 						]}>
 						<Text style={{ color: 'red', textAlign: 'center' }}>
 							{loginError}
@@ -397,13 +397,13 @@ export default function LoginScreen(props) {
 				<View
 					style={[
 						styles.row,
-						{ justifyContent: 'center', marginVertical: 20 }
+						{ justifyContent: 'center', marginVertical: 20 },
 					]}>
 					<Text
 						style={{
 							fontSize: 30,
 							fontWeight: 'bold',
-							color: '#f1f1f1'
+							color: '#f1f1f1',
 						}}>
 						Login
 					</Text>
@@ -412,7 +412,7 @@ export default function LoginScreen(props) {
 					<View style={styles.row}>
 						<Input
 							placeholder='Username'
-							onChangeText={text => {
+							onChangeText={(text) => {
 								setUsername(text);
 							}}
 							errorMessage={loginUsernameError}
@@ -426,7 +426,7 @@ export default function LoginScreen(props) {
 						<Input
 							placeholder='Password'
 							secureTextEntry={true}
-							onChangeText={text => {
+							onChangeText={(text) => {
 								setPassword(text);
 							}}
 							errorMessage={loginPasswordError}
@@ -439,7 +439,7 @@ export default function LoginScreen(props) {
 					<View
 						style={[
 							styles.row,
-							{ marginHorizontal: 0, marginTop: 20 }
+							{ marginHorizontal: 0, marginTop: 20 },
 						]}>
 						<TouchableOpacity
 							style={{
@@ -456,7 +456,7 @@ export default function LoginScreen(props) {
 								shadowOpacity: 0.8,
 								shadowRadius: 2,
 								elevation: 5,
-								flexDirection: 'row'
+								flexDirection: 'row',
 							}}
 							onPress={async () => {
 								login();
@@ -471,7 +471,7 @@ export default function LoginScreen(props) {
 								style={{
 									color: 'white',
 									margin: 5,
-									fontWeight: 'bold'
+									fontWeight: 'bold',
 								}}>
 								Sign in
 							</Text>
@@ -491,7 +491,7 @@ export default function LoginScreen(props) {
 								shadowOpacity: 0.8,
 								shadowRadius: 2,
 								elevation: 5,
-								flexDirection: 'row'
+								flexDirection: 'row',
 							}}
 							onPress={() => {
 								navigate('Register');
@@ -506,7 +506,7 @@ export default function LoginScreen(props) {
 								style={{
 									color: 'white',
 									margin: 5,
-									fontWeight: 'bold'
+									fontWeight: 'bold',
 								}}>
 								Sign up
 							</Text>
@@ -522,12 +522,12 @@ export default function LoginScreen(props) {
 							onFailure={badResponseGoogle}
 							cookiePolicy={'single_host_origin'}
 							scope={'profile email openid'}
-							render={renderProps => {
+							render={(renderProps) => {
 								return (
 									<View
 										style={[
 											styles.row,
-											{ justifyContent: 'center' }
+											{ justifyContent: 'center' },
 										]}>
 										<TouchableOpacity
 											style={{
@@ -542,12 +542,12 @@ export default function LoginScreen(props) {
 												justifyContent: 'center',
 												shadowOffset: {
 													width: 0,
-													height: 1
+													height: 1,
 												},
 												shadowOpacity: 0.8,
 												shadowRadius: 2,
 												elevation: 5,
-												flexDirection: 'row'
+												flexDirection: 'row',
 											}}
 											onPress={renderProps.onClick}
 											// disabled={renderProps.disabled}
@@ -562,7 +562,7 @@ export default function LoginScreen(props) {
 												style={{
 													color: 'white',
 													margin: 5,
-													fontWeight: 'bold'
+													fontWeight: 'bold',
 												}}>
 												Sign in with google
 											</Text>
@@ -590,7 +590,7 @@ export default function LoginScreen(props) {
 								shadowOpacity: 0.8,
 								shadowRadius: 2,
 								elevation: 5,
-								flexDirection: 'row'
+								flexDirection: 'row',
 							}}
 							onPress={async () => {
 								await signInMobile();
@@ -605,7 +605,7 @@ export default function LoginScreen(props) {
 								style={{
 									color: 'white',
 									margin: 5,
-									fontWeight: 'bold'
+									fontWeight: 'bold',
 								}}>
 								Sign in with google
 							</Text>
@@ -629,11 +629,11 @@ export default function LoginScreen(props) {
 					styles.row,
 					{
 						justifyContent: 'flex-start',
-						marginBottom: 20
-					}
+						marginBottom: 20,
+					},
 				]}>
 				<Text style={{ color: '#a1a1a1' }}>
-					{Platform.OS === 'web' && 'web'} v202004021440
+					{Platform.OS === 'web' && 'web'} v202004081858
 				</Text>
 			</View>
 			{Platform.OS === 'web' && loading && (
@@ -645,14 +645,14 @@ export default function LoginScreen(props) {
 							position: 'absolute',
 							alignContent: 'center',
 							justifyContent: 'center',
-							backgroundColor: '#21212180'
-						}
+							backgroundColor: '#21212180',
+						},
 					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
 						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>

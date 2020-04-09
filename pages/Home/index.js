@@ -7,7 +7,7 @@ import {
 	Dimensions,
 	Linking,
 	Platform,
-	StatusBar
+	StatusBar,
 } from 'react-native';
 let AsyncStorage = null;
 let Modal = null;
@@ -85,7 +85,7 @@ export default function HomeScreen(props) {
 
 	async function inGame() {
 		await get('/game/inGame', { user: user })
-			.then(async response => {
+			.then(async (response) => {
 				setLoading(false);
 				if (response.data.inGame) {
 					reset({
@@ -93,13 +93,13 @@ export default function HomeScreen(props) {
 						routes: [
 							{
 								name: 'Game',
-								params: { game: response.data.game._id }
-							}
-						]
+								params: { game: response.data.game._id },
+							},
+						],
 					});
 				}
 			})
-			.catch(error => {
+			.catch((error) => {
 				setLoading(false);
 			});
 	}
@@ -108,19 +108,19 @@ export default function HomeScreen(props) {
 		setLoading(true);
 		if (user) {
 			await post('/game', { user: user })
-				.then(async response => {
+				.then(async (response) => {
 					setLoading(false);
 					reset({
 						index: 1,
 						routes: [
 							{
 								name: 'Game',
-								params: { game: response.data.game._id }
-							}
-						]
+								params: { game: response.data.game._id },
+							},
+						],
 					});
 				})
-				.catch(error => {
+				.catch((error) => {
 					console.log(error);
 					setLoading(false);
 				});
@@ -150,7 +150,7 @@ export default function HomeScreen(props) {
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
 						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
@@ -163,8 +163,8 @@ export default function HomeScreen(props) {
 					<Image
 						source={require('../../assets/ocean_king.png')}
 						style={{
-							width: 200,
-							height: 200
+							width: 100,
+							height: 100,
 						}}
 						placeholderStyle={{ backgroundColor: 'transparent' }}
 					/>
@@ -172,7 +172,7 @@ export default function HomeScreen(props) {
 				<View
 					style={[
 						styles.row,
-						{ justifyContent: 'center', alignItems: 'center' }
+						{ justifyContent: 'center', alignItems: 'center' },
 					]}>
 					{error && <Text style={{ color: 'red' }}>{error}</Text>}
 				</View>
@@ -180,7 +180,7 @@ export default function HomeScreen(props) {
 					<View
 						style={[
 							styles.row,
-							{ justifyContent: 'center', marginTop: 10 }
+							{ justifyContent: 'center', marginTop: 10 },
 						]}>
 						<Text style={{ color: '#f1f1f1', fontSize: 15 }}>
 							{username}
@@ -196,8 +196,8 @@ export default function HomeScreen(props) {
 							justifyContent:
 								Platform.OS === 'web'
 									? 'center'
-									: 'space-between'
-						}
+									: 'space-between',
+						},
 					]}>
 					<TouchableOpacity
 						style={{
@@ -215,7 +215,7 @@ export default function HomeScreen(props) {
 							shadowOpacity: 0.8,
 							shadowRadius: 2,
 							elevation: 5,
-							flexDirection: 'row'
+							flexDirection: 'row',
 						}}
 						onPress={async () => {
 							await newGame();
@@ -230,9 +230,95 @@ export default function HomeScreen(props) {
 							style={{
 								color: 'white',
 								margin: 5,
-								fontWeight: 'bold'
+								fontWeight: 'bold',
 							}}>
 							New game
+						</Text>
+					</TouchableOpacity>
+					<TouchableOpacity
+						style={{
+							backgroundColor: '#142850',
+							height: 50,
+							width:
+								Platform.OS === 'web' ? 240 : (width - 45) / 2,
+							borderRadius: 25,
+							marginLeft: Platform.OS === 'web' ? 10 : null,
+							marginRight: Platform.OS === 'web' ? 0 : 15,
+							marginVertical: 10,
+							alignItems: 'center',
+							justifyContent: 'center',
+							shadowOffset: { width: 0, height: 1 },
+							shadowOpacity: 0.8,
+							shadowRadius: 2,
+							elevation: 5,
+							flexDirection: 'row',
+						}}
+						onPress={() => {
+							navigate('Join');
+						}}>
+						<Icon
+							name='server'
+							color={'white'}
+							type='font-awesome'
+							iconStyle={{ margin: 10 }}
+						/>
+						<Text
+							style={{
+								color: 'white',
+								margin: 5,
+								fontWeight: 'bold',
+							}}>
+							Join game
+						</Text>
+					</TouchableOpacity>
+				</View>
+
+				<View
+					style={[
+						styles.row,
+						{
+							marginHorizontal: 0,
+							// marginTop: 20,
+							justifyContent:
+								Platform.OS === 'web'
+									? 'center'
+									: 'space-between',
+						},
+					]}>
+					<TouchableOpacity
+						style={{
+							backgroundColor: '#27496d',
+							height: 50,
+							width:
+								Platform.OS === 'web' ? 240 : (width - 45) / 2,
+							borderRadius: 25,
+							marginLeft: Platform.OS === 'web' ? 0 : 15,
+							marginRight: Platform.OS === 'web' ? 10 : null,
+							marginVertical: 10,
+							alignItems: 'center',
+							justifyContent: 'center',
+							shadowOffset: { width: 0, height: 1 },
+							shadowOpacity: 0.8,
+							shadowRadius: 2,
+							elevation: 5,
+							flexDirection: 'row',
+						}}
+						onPress={async () => {
+							navigate('Scoreboards');
+						}}>
+						<Icon
+							name='list'
+							color={'white'}
+							type='font-awesome'
+							iconStyle={{ margin: 10 }}
+						/>
+						<Text
+							style={{
+								color: 'white',
+								margin: 5,
+								fontWeight: 'bold',
+							}}>
+							Scoreboards
 						</Text>
 					</TouchableOpacity>
 					<TouchableOpacity
@@ -251,13 +337,13 @@ export default function HomeScreen(props) {
 							shadowOpacity: 0.8,
 							shadowRadius: 2,
 							elevation: 5,
-							flexDirection: 'row'
+							flexDirection: 'row',
 						}}
 						onPress={() => {
-							navigate('Join');
+							navigate('Settings');
 						}}>
 						<Icon
-							name='server'
+							name='cogs'
 							color={'white'}
 							type='font-awesome'
 							iconStyle={{ margin: 10 }}
@@ -266,13 +352,14 @@ export default function HomeScreen(props) {
 							style={{
 								color: 'white',
 								margin: 5,
-								fontWeight: 'bold'
+								fontWeight: 'bold',
 							}}>
-							Join game
+							Settings
 						</Text>
 					</TouchableOpacity>
 				</View>
-				{Platform.OS === 'web' && (
+
+				{/* {Platform.OS === 'web' && (
 					<GoogleLogout
 						clientId={ANDROID_CLIENT_ID_WEB}
 						buttonText='Logout'
@@ -292,7 +379,7 @@ export default function HomeScreen(props) {
 							setLoading(false);
 							reset({
 								index: 1,
-								routes: [{ name: 'Login' }]
+								routes: [{ name: 'Login' }],
 							});
 						}}
 						onFailure={async () => {
@@ -311,10 +398,10 @@ export default function HomeScreen(props) {
 							setLoading(false);
 							reset({
 								index: 1,
-								routes: [{ name: 'Login' }]
+								routes: [{ name: 'Login' }],
 							});
 						}}
-						render={renderProps => {
+						render={(renderProps) => {
 							if (renderProps.disabled) {
 								setCleanStorage(true);
 							} else {
@@ -330,8 +417,8 @@ export default function HomeScreen(props) {
 											justifyContent: 'center',
 											display: renderProps.disabled
 												? 'none'
-												: 'flex'
-										}
+												: 'flex',
+										},
 									]}>
 									<TouchableOpacity
 										style={{
@@ -349,12 +436,12 @@ export default function HomeScreen(props) {
 											justifyContent: 'center',
 											shadowOffset: {
 												width: 0,
-												height: 1
+												height: 1,
 											},
 											shadowOpacity: 0.8,
 											shadowRadius: 2,
 											elevation: 5,
-											flexDirection: 'row'
+											flexDirection: 'row',
 										}}
 										onPress={renderProps.onClick}>
 										<Icon
@@ -367,7 +454,7 @@ export default function HomeScreen(props) {
 											style={{
 												color: 'white',
 												margin: 5,
-												fontWeight: 'bold'
+												fontWeight: 'bold',
 											}}>
 											Logout
 										</Text>
@@ -384,8 +471,8 @@ export default function HomeScreen(props) {
 							{
 								marginHorizontal: 0,
 								marginTop: 20,
-								justifyContent: 'center'
-							}
+								justifyContent: 'center',
+							},
 						]}>
 						<TouchableOpacity
 							style={{
@@ -400,12 +487,12 @@ export default function HomeScreen(props) {
 								justifyContent: 'center',
 								shadowOffset: {
 									width: 0,
-									height: 1
+									height: 1,
 								},
 								shadowOpacity: 0.8,
 								shadowRadius: 2,
 								elevation: 5,
-								flexDirection: 'row'
+								flexDirection: 'row',
 							}}
 							onPress={async () => {
 								setLoading(true);
@@ -425,7 +512,7 @@ export default function HomeScreen(props) {
 								setLoading(false);
 								reset({
 									index: 1,
-									routes: [{ name: 'Login' }]
+									routes: [{ name: 'Login' }],
 								});
 							}}>
 							<Icon
@@ -438,22 +525,23 @@ export default function HomeScreen(props) {
 								style={{
 									color: 'white',
 									margin: 5,
-									fontWeight: 'bold'
+									fontWeight: 'bold',
 								}}>
 								logout
 							</Text>
 						</TouchableOpacity>
 					</View>
-				)}
-				{Platform.OS !== 'web' && (
+				)} */}
+
+				{/* {Platform.OS !== 'web' && (
 					<View
 						style={[
 							styles.row,
 							{
 								marginHorizontal: 0,
 								marginTop: 20,
-								justifyContent: 'center'
-							}
+								justifyContent: 'center',
+							},
 						]}>
 						<TouchableOpacity
 							style={{
@@ -468,12 +556,12 @@ export default function HomeScreen(props) {
 								justifyContent: 'center',
 								shadowOffset: {
 									width: 0,
-									height: 1
+									height: 1,
 								},
 								shadowOpacity: 0.8,
 								shadowRadius: 2,
 								elevation: 5,
-								flexDirection: 'row'
+								flexDirection: 'row',
 							}}
 							onPress={async () => {
 								setLoading(true);
@@ -503,7 +591,7 @@ export default function HomeScreen(props) {
 								setLoading(false);
 								reset({
 									index: 1,
-									routes: [{ name: 'Login' }]
+									routes: [{ name: 'Login' }],
 								});
 							}}>
 							<Icon
@@ -516,13 +604,14 @@ export default function HomeScreen(props) {
 								style={{
 									color: 'white',
 									margin: 5,
-									fontWeight: 'bold'
+									fontWeight: 'bold',
 								}}>
 								Logout
 							</Text>
 						</TouchableOpacity>
 					</View>
-				)}
+				)} */}
+
 				<View style={[styles.row, { justifyContent: 'center' }]}>
 					<TouchableOpacity
 						onPress={() => {
@@ -539,11 +628,11 @@ export default function HomeScreen(props) {
 					styles.row,
 					{
 						justifyContent: 'flex-start',
-						marginBottom: 20
-					}
+						marginBottom: 20,
+					},
 				]}>
 				<Text style={{ color: '#a1a1a1' }}>
-					{Platform.OS === 'web' && 'web'} v202004021440
+					{Platform.OS === 'web' && 'web'} v202004081858
 				</Text>
 			</View>
 
@@ -556,19 +645,19 @@ export default function HomeScreen(props) {
 							position: 'absolute',
 							alignContent: 'center',
 							justifyContent: 'center',
-							backgroundColor: '#21212180'
-						}
+							backgroundColor: '#21212180',
+						},
 					]}>
 					<View
 						style={{
 							flexDirection: 'row',
 							alignItems: 'center',
-							justifyContent: 'center'
+							justifyContent: 'center',
 						}}>
 						<ActivityIndicator size='large' color='#f1f1f1' />
 						<Text
 							style={{
-								color: '#f1f1f1'
+								color: '#f1f1f1',
 							}}>
 							{' '}
 							Loanding...
