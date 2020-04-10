@@ -1,7 +1,7 @@
 self.__precacheManifest = [
   {
-    "revision": "957475cf41c7156f6c53",
-    "url": "/ocean_king/static/js/app.5484942f.chunk.js"
+    "revision": "0b9e4c54eaeb783efb0a",
+    "url": "/ocean_king/static/js/app.44379cb5.chunk.js"
   },
   {
     "revision": "fcae1339bc6a2da147a1",
@@ -180,16 +180,16 @@ self.__precacheManifest = [
     "url": "/ocean_king/static/media/scary_mary.cd29403d.png"
   },
   {
-    "revision": "d0c694b562b2208635f250762cd7fc79",
-    "url": "/ocean_king/serve.json"
+    "revision": "11a7f2d96f84fe8e9f93954ce1a598f6",
+    "url": "/ocean_king/favicon.ico"
   },
   {
     "revision": "48c7ed4e7da9792af288a60d7242d615",
     "url": "/ocean_king/expo-service-worker.js"
   },
   {
-    "revision": "11a7f2d96f84fe8e9f93954ce1a598f6",
-    "url": "/ocean_king/favicon.ico"
+    "revision": "d0c694b562b2208635f250762cd7fc79",
+    "url": "/ocean_king/serve.json"
   },
   {
     "revision": "2a833c602a7d15da44841b37dcd8bf26",
@@ -200,7 +200,7 @@ self.__precacheManifest = [
     "url": "/ocean_king/favicon-32.png"
   },
   {
-    "revision": "c4d017a0838b99952a7faccbf57fa1b6",
+    "revision": "602c50aae47f26370de08f4ee914d2d2",
     "url": "/ocean_king/index.html"
   },
   {
