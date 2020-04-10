@@ -7,8 +7,8 @@ import ChatScreen from './pages/Chat';
 import RulesScreen from './pages/Rules';
 import CreditsScreen from './pages/Credits';
 import SettingsScreen from './pages/Settings';
+import PontuationsScreen from './pages/Pontuations';
 import ScoreboardsScreen from './pages/Scoreboards';
-import RegisterScreen from './pages/Register';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
@@ -109,14 +109,14 @@ function StackNavigator() {
 				}}
 			/>
 			<Stack.Screen
-				name='Register'
-				component={RegisterScreen}
+				name='Pontuations'
+				component={PontuationsScreen}
 				options={{
 					headerStyle: {
 						backgroundColor: '#212121',
 					},
 					headerTitleStyle: { color: 'white' },
-					title: 'Register',
+					title: 'Scores',
 				}}
 			/>
 		</Stack.Navigator>

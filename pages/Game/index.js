@@ -1,41 +1,30 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	View,
 	TouchableOpacity,
-	ActivityIndicator,
-	Text,
-	Dimensions,
 	ScrollView,
 	AppState,
 	Platform,
-	StatusBar,
 	RefreshControl,
-	Keyboard,
+	Text,
 } from 'react-native';
-let AsyncStorage = null;
-let Modal = null;
-let AdSense = null;
-if (Platform.OS !== 'web') {
-	AsyncStorage = require('react-native').AsyncStorage;
-	Modal = require('react-native-modal').default;
-} else {
-	AdSense = require('react-adsense').default;
-}
+
 import { SafeAreaView } from 'react-native-safe-area-context';
 import io from 'socket.io-client';
-import { Icon, Input, Image } from 'react-native-elements';
-import styles from '../../style';
+import { Icon, Image } from 'react-native-elements';
 import { post, get } from '../../services/api';
+
+import { getUser } from '../../utils';
+import ADMobBanner from '../Components/ADMobBanner';
+import Modal from '../Components/Modal';
+import Queue from '../Components/Queue';
+import Bets from '../Components/Bets';
+import Game from '../Components/Game';
+import Button from '../Components/Button';
+import Finish from '../Components/Finish';
 import Card from '../Components/Card';
-import {
-	setTestDeviceIDAsync,
-	AdMobBanner,
-	AdMobInterstitial,
-} from 'expo-ads-admob';
-import { AD_MOB_UNIT_ID, AD_MOB_UNIT_ID_INTER } from 'react-native-dotenv';
 
 export default function GameScreen(props) {
-	const { height, width } = Dimensions.get('window');
 	const [user, setUser] = useState(null);
 	const [game, setGame] = useState(null);
 	const [players, setPlayers] = useState(null);
@@ -55,20 +44,14 @@ export default function GameScreen(props) {
 	const [choiceVisible, setChoiceVisible] = useState(false);
 	const [socket, setSocket] = useState(null);
 	const [room, setRoom] = useState(null);
-	const [colorArray, setColorArray] = useState(null);
-	const [viewPontuations, setViewPontuations] = useState(false);
 	const [newMessage, setNewMessage] = useState(false);
-	const [count, setCount] = useState(0);
+	const [open, setOpen] = useState(false);
+	const [cardToPlay, setCardToPlay] = useState(null);
 
 	const { navigate, reset } = props.navigation;
 
 	useEffect(() => {
-		setLoading(true);
-		getUser();
-		if (Platform.OS !== 'web') {
-			setTestDeviceIDAsync('EMULATOR');
-		}
-		setLoading(false);
+		getLocalUser();
 	}, []);
 
 	useEffect(() => {
@@ -101,7 +84,7 @@ export default function GameScreen(props) {
 	useEffect(() => {
 		if (socket !== null && room !== null) {
 			getGamePlayers(room);
-			// getGame(room);
+			getGame(room);
 			socket.on('user join', function (user) {
 				// console.log(user + ' join your room');
 				getGamePlayers(room);
@@ -143,7 +126,7 @@ export default function GameScreen(props) {
 			});
 			socket.on('turn winner', function (player) {
 				// console.log('winner: ' + player.name);
-				setDisplayWinner(player.name);
+				setDisplayWinner(player._id);
 				setCurrentPlayer(null);
 			});
 			socket.on('new message sended', async function () {
@@ -200,32 +183,10 @@ export default function GameScreen(props) {
 		}
 	}, [user, username]);
 
-	async function callInterstitial() {
-		setLoading(true);
-		AdMobInterstitial.setAdUnitID(AD_MOB_UNIT_ID_INTER);
-		await AdMobInterstitial.requestAdAsync({ servePersonalizedAds: true });
-		await AdMobInterstitial.showAdAsync();
-		setLoading(false);
-	}
-
-	async function getUser() {
-		let user_temp = null;
-		let name = null;
-		if (Platform.OS !== 'web') {
-			user_temp = await AsyncStorage.getItem('@ocean_king:user', null);
-			name = await AsyncStorage.getItem('@ocean_king:username', null);
-		} else {
-			user_temp = localStorage.getItem('@ocean_king:user', null);
-			name = localStorage.getItem('@ocean_king:username', null);
-		}
-
-		if (user_temp != null) {
-			setUser(user_temp);
-			setUsername(name);
-		} else {
-			setLoading(false);
-			reset({ index: 1, routes: [{ name: 'Login' }] });
-		}
+	async function getLocalUser() {
+		const { user, username } = await getUser(reset, true);
+		setUser(user);
+		setUsername(username);
 	}
 
 	async function handleChange(newState) {
@@ -249,44 +210,6 @@ export default function GameScreen(props) {
 		}
 
 		setLoading(false);
-	}
-
-	function interpolateColor(color1, color2, factor) {
-		if (arguments.length < 3) {
-			factor = 0.5;
-		}
-		var result = color1.slice();
-		for (var i = 0; i < 3; i++) {
-			result[i] = Math.round(
-				result[i] + factor * (color2[i] - color1[i])
-			);
-		}
-		return result;
-	}
-
-	function interpolateColors(color1, color2, steps) {
-		if (steps === 1) {
-			return [[30, 200, 30]];
-		}
-
-		// console.log(steps, pontuations.length);
-		// console.log(pontuations, pontuations.length !== steps);
-
-		if (pontuations && pontuations.length !== steps) {
-			steps = pontuations.length;
-		}
-		var stepFactor = 1 / (steps - 1),
-			interpolatedColorArray = [];
-
-		color1 = color1.match(/\d+/g).map(Number);
-		color2 = color2.match(/\d+/g).map(Number);
-
-		for (var i = 0; i < steps; i++) {
-			interpolatedColorArray.push(
-				interpolateColor(color1, color2, stepFactor * i)
-			);
-		}
-		return interpolatedColorArray;
 	}
 
 	async function getPontuations(current_game) {
@@ -360,13 +283,6 @@ export default function GameScreen(props) {
 		await get('/game/gamePlayers', { game: game })
 			.then(async (response) => {
 				setPlayers(response.data.game_players);
-				setColorArray(
-					interpolateColors(
-						'rgb(30, 200, 30)',
-						'rgb(200, 20, 20)',
-						response.data.game_players.length
-					)
-				);
 			})
 			.catch((error) => {
 				setLoading(false);
@@ -454,212 +370,7 @@ export default function GameScreen(props) {
 
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			{Platform.OS !== 'web' && (
-				<AdMobBanner
-					bannerSize='fullBanner'
-					adUnitID={AD_MOB_UNIT_ID}
-					servePersonalizedAds
-					bannerSize={'smartBannerLandscape'}
-				/>
-			)}
-
-			{Platform.OS !== 'web' && (
-				<Modal
-					isVisible={loading}
-					deviceHeight={height + StatusBar.currentHeight}
-					coverScreen={false}
-					backdropColor={'#212121'}
-					backdropOpacity={0.8}>
-					<View
-						style={{
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'center',
-						}}>
-						<ActivityIndicator size='large' color='#f1f1f1' />
-						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
-					</View>
-				</Modal>
-			)}
-
-			{Platform.OS !== 'web' && (
-				<Modal
-					isVisible={displayWinner !== null}
-					coverScreen={false}
-					deviceHeight={height + StatusBar.currentHeight}
-					backdropColor={'#212121'}
-					backdropOpacity={0.8}>
-					<View
-						style={{
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flexWrap: 'wrap',
-						}}>
-						<Text
-							style={{
-								color: '#f1f1f1',
-								fontSize: 25,
-								textAlign: 'center',
-							}}>
-							{displayWinner} won the hand
-						</Text>
-					</View>
-				</Modal>
-			)}
-
-			{Platform.OS !== 'web' && gameState === 'in game' && (
-				<Modal
-					isVisible={viewPontuations}
-					coverScreen={false}
-					deviceHeight={height + StatusBar.currentHeight}
-					backdropColor={'#212121'}
-					backdropOpacity={0.95}>
-					<View
-						style={{
-							flex: 1,
-							marginTop: 20,
-						}}>
-						<View
-							style={[
-								styles.row,
-								{
-									justifyContent: 'space-around',
-									marginBottom: 50,
-								},
-							]}>
-							<View>
-								<Icon
-									name='list-alt'
-									color={'white'}
-									type='font-awesome'
-									size={30}
-									iconStyle={{ margin: 10 }}
-								/>
-								<Text
-									style={{
-										fontSize: 25,
-										fontWeight: 'bold',
-										color: '#f1f1f1',
-										marginHorizontal: 10,
-									}}>
-									Pontuations
-								</Text>
-							</View>
-							<TouchableOpacity
-								style={{
-									width: 80,
-									height: 40,
-									borderRadius: 100,
-									backgroundColor: '#c1c1c1',
-									justifyContent: 'center',
-									alignItems: 'center',
-								}}
-								onPress={() => {
-									setViewPontuations(false);
-								}}>
-								<Icon
-									name='times'
-									color={'white'}
-									type='font-awesome'
-									size={17}
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-						</View>
-
-						{pontuations &&
-							pontuations.map((pont, i) => {
-								return (
-									<View style={styles.row} key={i}>
-										<Text
-											style={{
-												fontSize: 15,
-												fontWeight: 'bold',
-												color: '#f1f1f1',
-												marginHorizontal: 5,
-											}}>
-											{pont.player.name}:{' '}
-										</Text>
-										<Text
-											style={{
-												backgroundColor: '#212121',
-												borderRadius: 20,
-												paddingHorizontal: 5,
-												color: '#f1f1f1',
-												fontWeight: 'bold',
-											}}>
-											{pont.points}
-										</Text>
-									</View>
-								);
-							})}
-					</View>
-				</Modal>
-			)}
-
-			{Platform.OS !== 'web' && (
-				<Modal
-					isVisible={choiceVisible}
-					coverScreen={false}
-					deviceHeight={height + StatusBar.currentHeight}
-					backdropColor={'#212121'}
-					backdropOpacity={0.8}>
-					<View
-						style={{
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'space-around',
-						}}>
-						<TouchableOpacity
-							onPress={async () => {
-								setCurrentPlayer(null);
-								setChoiceVisible(false);
-								await playCard(
-									{
-										color: tempCard.color,
-										value: 'f',
-										index: 58,
-									},
-									game
-								);
-								setTempCard(null);
-								// setCards(null);
-							}}>
-							<Image
-								source={require('../../assets/cards/cards/f.png')}
-								style={{ width: 50, height: 50 }}
-								placeholderStyle={{
-									backgroundColor: 'transparent',
-								}}
-							/>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={async () => {
-								setCurrentPlayer(null);
-								setChoiceVisible(false);
-								await playCard(
-									{
-										color: tempCard.color,
-										value: 'p',
-										index: 58,
-									},
-									game
-								);
-								setTempCard(null);
-								// setCards(null);
-							}}>
-							<Image
-								source={require('../../assets/cards/cards/p.png')}
-								style={{ width: 50, height: 50 }}
-								placeholderStyle={{
-									backgroundColor: 'transparent',
-								}}
-							/>
-						</TouchableOpacity>
-					</View>
-				</Modal>
-			)}
+			<ADMobBanner />
 
 			<ScrollView
 				contentContainerStyle={{ flexGrow: 1 }}
@@ -669,1128 +380,215 @@ export default function GameScreen(props) {
 						onRefresh={onRefresh}
 					/>
 				}>
-				{gameState && gameState === 'in queue' && (
-					<View style={[styles.container, { alignItems: 'center' }]}>
-						<View>
-							<View style={styles.row}>
-								<Text
-									style={{
-										fontSize: 30,
-										fontWeight: 'bold',
-										color: '#f1f1f1',
-									}}>
-									Players
-								</Text>
-							</View>
-							{players &&
-								players.length !== 0 &&
-								players.map((p, i) => {
-									return (
-										<View style={styles.row} key={i}>
-											<Text style={{ color: '#f1f1f1' }}>
-												{p.player.name}
-											</Text>
-										</View>
-									);
-								})}
-						</View>
-						<View style={[styles.row, { marginTop: 20 }]}>
-							<TouchableOpacity
-								style={{
-									backgroundColor: newMessage
-										? '#2177aa'
-										: '#f1f1f1',
-									color: newMessage ? '#f1f1f1' : '#212121',
-									borderRadius: 100,
-									height: 40,
-									width: 80,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: {
-										width: 0,
-										height: 1,
-									},
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={() => {
-									setCount(0);
-									setNewMessage(false);
-									navigate('Chat', {
-										socket: socket,
-										room: room,
-										user: user,
-									});
-								}}>
-								<Icon
-									name='comments'
-									color={newMessage ? '#f1f1f1' : '#212121'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-						</View>
-						{user &&
-							game &&
-							game.createdBy &&
-							user == game.createdBy._id &&
-							players &&
-							players.length >= 2 &&
-							players.length <= 6 && (
-								<View
-									style={[
-										styles.row,
-										{
-											marginHorizontal: 0,
-											justifyContent: 'center',
-										},
-									]}>
-									<TouchableOpacity
-										style={{
-											backgroundColor: '#27496d',
-											height: 40,
-											width: 80,
-											borderRadius: 25,
-											marginLeft: 10,
-											marginRight: 10,
-											marginVertical: 10,
-											alignItems: 'center',
-											justifyContent: 'center',
-											shadowOffset: {
-												width: 0,
-												height: 1,
-											},
-											shadowOpacity: 0.8,
-											shadowRadius: 2,
-											elevation: 5,
-											flexDirection: 'row',
-										}}
-										onPress={async () => {
-											await startGame();
-										}}>
-										<Icon
-											name='play'
-											color={'white'}
-											type='font-awesome'
-											iconStyle={{ margin: 10 }}
-										/>
-									</TouchableOpacity>
-								</View>
-							)}
-						<View
-							style={[
-								styles.row,
-								{
-									marginHorizontal: 0,
-									justifyContent: 'center',
-								},
-							]}>
-							<TouchableOpacity
-								style={{
-									backgroundColor: '#a72121',
-									height: 40,
-									width: 80,
-									borderRadius: 25,
-									marginLeft: 10,
-									marginRight: 10,
-									marginVertical: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: {
-										width: 0,
-										height: 1,
-									},
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={async () => {
-									await leaveGame();
-								}}>
-								<Icon
-									name='sign-out'
-									color={'white'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-						</View>
-					</View>
-				)}
-				{gameState && gameState === 'place bets' && alreadyBet && (
-					<View style={styles.container}>
-						<View
-							style={[styles.row, { justifyContent: 'center' }]}>
-							<Text
-								style={{
-									fontSize: 25,
-									fontWeight: 'bold',
-									color: '#f1f1f1',
-								}}>
-								Waiting for other players...
-							</Text>
-						</View>
-						<View
-							style={[
-								styles.row,
-								{
-									marginHorizontal: 0,
-									justifyContent: 'center',
-								},
-							]}>
-							<TouchableOpacity
-								style={{
-									backgroundColor: newMessage
-										? '#2177aa'
-										: '#f1f1f1',
-									color: '#212121',
-									borderRadius: 100,
-									height: 40,
-									width: 80,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={() => {
-									setCount(0);
-									setNewMessage(false);
-									navigate('Chat', {
-										socket: socket,
-										room: room,
-										user: user,
-									});
-								}}>
-								<Icon
-									name='comments'
-									color={'#212121'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={{
-									backgroundColor: '#a72121',
-									borderRadius: 100,
-									height: 40,
-									width: 80,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={async () => {
-									await leaveGame();
-								}}>
-								<Icon
-									name='sign-out'
-									color={'white'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-						</View>
-						<View
-							style={[
-								styles.row,
-								{
-									marginHorizontal: 0,
-									marginBottom: 20,
-								},
-							]}>
-							<ScrollView
-								horizontal={true}
-								showsHorizontalScrollIndicator={false}
-								decelerationRate={0}
-								snapToInterval={80}
-								snapToAlignment={'center'}
-								contentInset={{
-									top: 0,
-									left: 0,
-									bottom: 0,
-									right: 0,
-								}}
-								pagingEnabled={false}
-								contentContainerStyle={{
-									flexGrow: 1,
-									justifyContent: 'center',
-								}}>
-								{cards &&
-									cards.length !== 0 &&
-									cards.map((v, i) => {
-										return (
-											<View
-												key={i}
-												style={{ marginHorizontal: 5 }}>
-												<Card
-													color={v.color}
-													value={v.value}
-													overlay={false}
-												/>
-											</View>
-										);
-									})}
-							</ScrollView>
-						</View>
-					</View>
-				)}
-				{gameState && gameState === 'place bets' && !alreadyBet && (
-					<View
-						style={[
-							styles.container,
-							{
-								marginVertical: 0,
-								justifyContent: 'space-between',
-							},
-						]}>
-						<View
-							style={[
-								{
-									justifyContent: 'space-around',
-									alignItems: 'center',
-									flexDirection: 'column',
-									flex: 1,
-									marginBottom: 20,
-								},
-							]}>
-							<View style={styles.row}>
-								<Text
-									style={{
-										fontSize: 25,
-										fontWeight: 'bold',
-										color: '#f1f1f1',
-										marginHorizontal: 10,
-									}}>
-									Round {maxBets}
-								</Text>
-								<TouchableOpacity
-									style={{
-										backgroundColor: newMessage
-											? '#2177aa'
-											: '#f1f1f1',
-										color: '#212121',
-										borderRadius: 100,
-										height: 40,
-										width: 80,
-										marginVertical: 10,
-										marginHorizontal: 10,
-										alignItems: 'center',
-										justifyContent: 'center',
-										shadowOffset: { width: 0, height: 1 },
-										shadowOpacity: 0.8,
-										shadowRadius: 2,
-										elevation: 5,
-										flexDirection: 'row',
-									}}
-									onPress={() => {
-										setCount(0);
-										setNewMessage(false);
-										navigate('Chat', {
-											socket: socket,
-											room: room,
-											user: user,
-										});
-									}}>
-									<Icon
-										name='comments'
-										color={'#212121'}
-										type='font-awesome'
-										iconStyle={{ margin: 10 }}
-									/>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={{
-										backgroundColor: '#a72121',
-										borderRadius: 100,
-										height: 40,
-										width: 80,
-										marginVertical: 10,
-										marginHorizontal: 10,
-										alignItems: 'center',
-										justifyContent: 'center',
-										shadowOffset: { width: 0, height: 1 },
-										shadowOpacity: 0.8,
-										shadowRadius: 2,
-										elevation: 5,
-										flexDirection: 'row',
-									}}
-									onPress={async () => {
-										await leaveGame();
-									}}>
-									<Icon
-										name='sign-out'
-										color={'white'}
-										type='font-awesome'
-										iconStyle={{ margin: 10 }}
-									/>
-								</TouchableOpacity>
-							</View>
-							{pontuations &&
-								pontuations.map((pont, i) => {
-									return (
-										<View
-											style={[
-												styles.row,
-												{
-													justifyContent:
-														'space-around',
-												},
-											]}
-											key={i}>
-											<Text
-												style={{
-													fontSize: 15,
-													fontWeight: 'bold',
-													color: '#f1f1f1',
-													marginHorizontal: 5,
-												}}>
-												{pont.player.name}:{' '}
-											</Text>
-											<Text
-												style={{
-													backgroundColor: '#212121',
-													borderRadius: 20,
-													paddingHorizontal: 5,
-													color: '#f1f1f1',
-													fontWeight: 'bold',
-												}}>
-												{pont.points}
-											</Text>
-										</View>
-									);
-								})}
-							<View style={[styles.row, { flexWrap: 'wrap' }]}>
-								{maxBets !== null &&
-									[...Array(maxBets + 1)].map((v, i) => {
-										return (
-											<TouchableOpacity
-												key={i}
-												style={{
-													backgroundColor: '#414141',
-													height: 40,
-													width: 80,
-													borderRadius: 20,
-													alignItems: 'center',
-													justifyContent: 'center',
-													margin: 5,
-												}}
-												onPress={async () => {
-													await placeBet(i);
-												}}>
-												<Text
-													style={{
-														color: '#f1f1f1',
-														fontSize: 20,
-													}}>
-													{parseInt(i)}
-												</Text>
-											</TouchableOpacity>
-										);
-									})}
-							</View>
-						</View>
-						<View
-							style={[
-								styles.row,
-								{
-									marginHorizontal: 0,
-									marginBottom: 20,
-								},
-							]}>
-							<ScrollView
-								horizontal={true}
-								showsHorizontalScrollIndicator={false}
-								decelerationRate={0}
-								snapToInterval={80}
-								snapToAlignment={'center'}
-								contentInset={{
-									top: 0,
-									left: 0,
-									bottom: 0,
-									right: 0,
-								}}
-								pagingEnabled={false}
-								contentContainerStyle={{
-									flexGrow: 1,
-									justifyContent: 'center',
-								}}>
-								{cards &&
-									cards.length !== 0 &&
-									cards.map((v, i) => {
-										return (
-											<View
-												key={i}
-												style={{ marginHorizontal: 5 }}>
-												<Card
-													color={v.color}
-													value={v.value}
-													overlay={false}
-												/>
-											</View>
-										);
-									})}
-							</ScrollView>
-						</View>
-					</View>
-				)}
-				{gameState && gameState === 'in game' && (
-					<View
-						style={[
-							styles.container,
-							{
-								marginVertical: 0,
-								justifyContent: 'space-between',
-							},
-						]}>
-						<View
-							style={[
-								styles.row,
-								{
-									justifyContent: 'center',
-									alignItems: 'center',
-								},
-							]}>
-							<Text
-								style={{
-									fontSize: 25,
-									fontWeight: 'bold',
-									color: '#f1f1f1',
-									marginHorizontal: 10,
-								}}>
-								Round {maxBets}
-							</Text>
+				<Queue
+					gameState={gameState}
+					players={players}
+					game={game}
+					user={user}
+					newMessage={newMessage}
+					setNewMessage={setNewMessage}
+					navigate={navigate}
+					socket={socket}
+					room={room}
+					startGame={startGame}
+					leaveGame={leaveGame}
+				/>
+				<Bets
+					gameState={gameState}
+					alreadyBet={alreadyBet}
+					user={user}
+					newMessage={newMessage}
+					setNewMessage={setNewMessage}
+					navigate={navigate}
+					socket={socket}
+					room={room}
+					leaveGame={leaveGame}
+					cards={cards}
+					maxBets={maxBets}
+					pontuations={pontuations}
+					placeBet={placeBet}
+				/>
 
-							<TouchableOpacity
-								style={{
-									backgroundColor: '#21b121',
-									height: 40,
-									width: 80,
-									borderRadius: 100,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={() => {
-									setViewPontuations(true);
-								}}>
-								<Icon
-									size={20}
-									name='list-alt'
-									color={'white'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
+				<Game
+					user={user}
+					socket={socket}
+					room={room}
+					gameState={gameState}
+					maxBets={maxBets}
+					navigate={navigate}
+					pontuations={pontuations}
+					setNewMessage={setNewMessage}
+					newMessage={newMessage}
+					leaveGame={leaveGame}
+					betsState={betsState}
+					tempResults={tempResults}
+					playedCardsState={playedCardsState}
+					currentPlayer={currentPlayer}
+					setCurrentPlayer={setCurrentPlayer}
+					cards={cards}
+					game={game}
+					setTempCard={setTempCard}
+					playCard={playCard}
+					displayWinner={displayWinner}
+					setChoiceVisible={setChoiceVisible}
+					open={open}
+					setOpen={setOpen}
+					cardToPlay={cardToPlay}
+					setCardToPlay={setCardToPlay}
+				/>
 
-							<TouchableOpacity
-								style={{
-									backgroundColor: newMessage
-										? '#2177aa'
-										: '#f1f1f1',
-									color: '#212121',
-									borderRadius: 100,
-									height: 40,
-									width: 80,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={() => {
-									setCount(0);
-									setNewMessage(false);
-									navigate('Chat', {
-										socket: socket,
-										room: room,
-										user: user,
-									});
-								}}>
-								<Icon
-									name='comments'
-									color={'#212121'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-
-							<TouchableOpacity
-								style={{
-									backgroundColor: '#a72121',
-									height: 40,
-									width: 80,
-									borderRadius: 100,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={async () => {
-									await leaveGame();
-								}}>
-								<Icon
-									name='sign-out'
-									color={'white'}
-									size={20}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-						</View>
-
-						<View
-							style={[
-								styles.row,
-								{
-									justifyContent: 'center',
-									flexWrap: 'wrap',
-									margin: 0,
-								},
-							]}>
-							{betsState &&
-								tempResults &&
-								betsState.map((bet, i) => {
-									let hasReturn = false;
-									return (
-										<View
-											key={i}
-											style={{
-												alignItems: 'center',
-												margin: 2,
-											}}>
-											{bet && (
-												<Text
-													style={{
-														fontSize: 15,
-														fontWeight: 'bold',
-														color:
-															bet.player._id ===
-															currentPlayer
-																? '#21b121'
-																: '#f1f1f1',
-													}}>
-													{bet.player.name}
-												</Text>
-											)}
-											{playedCardsState &&
-												bet &&
-												playedCardsState.map(
-													(card, j) => {
-														if (
-															card.player._id ===
-															bet.player._id
-														) {
-															return (
-																<Card
-																	key={j}
-																	color={
-																		card
-																			.card[0]
-																			.color
-																	}
-																	value={
-																		card
-																			.card[0]
-																			.value
-																	}
-																	overlay={
-																		false
-																	}
-																/>
-															);
-														}
-													}
-												)}
-											{bet && (
-												<Text
-													style={{
-														fontSize: 15,
-														fontWeight: 'bold',
-														color:
-															bet.player._id ===
-															currentPlayer
-																? '#21b121'
-																: '#f1f1f1',
-													}}>
-													{
-														tempResults[
-															bet.player._id
-														]
-													}
-													/{bet.value}
-												</Text>
-											)}
-										</View>
-									);
-								})}
-						</View>
-						<View
-							style={[
-								styles.row,
-								{
-									marginHorizontal: 0,
-									marginBottom: 20,
-								},
-							]}>
-							<ScrollView
-								horizontal={true}
-								showsHorizontalScrollIndicator={false}
-								decelerationRate={0}
-								snapToInterval={80}
-								snapToAlignment={'center'}
-								contentInset={{
-									top: 0,
-									left: 0,
-									bottom: 0,
-									right: 0,
-								}}
-								pagingEnabled={false}
-								contentContainerStyle={{
-									flexGrow: 1,
-									justifyContent: 'center',
-								}}>
-								{cards &&
-									cards.length !== 0 &&
-									cards.map((v, i) => {
-										return (
-											<View
-												key={i}
-												style={{
-													marginHorizontal: 5,
-												}}>
-												<TouchableOpacity
-													onPress={async () => {
-														if (
-															currentPlayer ===
-															user
-														) {
-															let temp = cards;
-															const index = temp.indexOf(
-																v
-															);
-															if (index > -1) {
-																temp.splice(
-																	index,
-																	1
-																);
-															}
-															// setTempCards(temp);
-
-															if (
-																v.color ===
-																'binary'
-															) {
-																setTempCard(v);
-																setChoiceVisible(
-																	true
-																);
-															} else {
-																setCurrentPlayer(
-																	null
-																);
-																await playCard(
-																	v,
-																	game
-																);
-																// setCards(null);
-															}
-														}
-													}}>
-													<Card
-														color={v.color}
-														value={v.value}
-														overlay={
-															currentPlayer !==
-															user
-														}
-													/>
-												</TouchableOpacity>
-											</View>
-										);
-									})}
-							</ScrollView>
-						</View>
-					</View>
-				)}
-				{gameState && gameState === 'finished' && (
-					<View style={[styles.container, { alignItems: 'center' }]}>
-						{!pontuations && (
-							<View style={[styles.row]}>
-								<Text
-									style={{
-										fontSize: 25,
-										fontWeight: 'bold',
-										color: '#f1f1f1',
-									}}>
-									Waiting for pontuations...
-								</Text>
-							</View>
-						)}
-						{pontuations &&
-							pontuations.map((pont, i) => {
-								return (
-									<View
-										style={[
-											styles.row,
-											{
-												justifyContent: 'space-around',
-											},
-										]}
-										key={i}>
-										<Text
-											style={{
-												fontSize: 15,
-												fontWeight: 'bold',
-												color: '#f1f1f1',
-												marginHorizontal: 5,
-											}}>
-											{pont.player.name}:{' '}
-										</Text>
-										<Text
-											style={{
-												backgroundColor: '#212121',
-												borderRadius: 20,
-												paddingHorizontal: 5,
-												color: '#f1f1f1',
-												fontWeight: 'bold',
-											}}>
-											{pont.points}
-										</Text>
-									</View>
-								);
-							})}
-						<View
-							style={[
-								styles.row,
-								{
-									marginHorizontal: 0,
-									justifyContent: 'center',
-								},
-							]}>
-							<TouchableOpacity
-								style={{
-									backgroundColor: newMessage
-										? '#2177aa'
-										: '#f1f1f1',
-									color: '#212121',
-									borderRadius: 100,
-									height: 40,
-									width: 80,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={() => {
-									setCount(0);
-									setNewMessage(false);
-									navigate('Chat', {
-										socket: socket,
-										room: room,
-										user: user,
-									});
-								}}>
-								<Icon
-									name='comments'
-									color={'#212121'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-							<TouchableOpacity
-								style={{
-									backgroundColor: '#a72121',
-									height: 40,
-									width: 80,
-									borderRadius: 100,
-									marginVertical: 10,
-									marginHorizontal: 10,
-									alignItems: 'center',
-									justifyContent: 'center',
-									shadowOffset: { width: 0, height: 1 },
-									shadowOpacity: 0.8,
-									shadowRadius: 2,
-									elevation: 5,
-									flexDirection: 'row',
-								}}
-								onPress={async () => {
-									await leaveGame();
-								}}>
-								<Icon
-									name='sign-out'
-									color={'white'}
-									type='font-awesome'
-									iconStyle={{ margin: 10 }}
-								/>
-							</TouchableOpacity>
-						</View>
-					</View>
-				)}
+				<Finish
+					user={user}
+					socket={socket}
+					room={room}
+					gameState={gameState}
+					pontuations={pontuations}
+					newMessage={newMessage}
+					setNewMessage={setNewMessage}
+					navigate={navigate}
+					leaveGame={leaveGame}
+				/>
 			</ScrollView>
 
-			{Platform.OS === 'web' && loading && (
-				<View
-					style={[
-						{
-							width: width,
-							height: height,
-							position: 'absolute',
-							alignContent: 'center',
-							justifyContent: 'center',
-							backgroundColor: '#21212180',
-						},
-					]}>
+			<Modal
+				visible={open && cardToPlay !== null}
+				content={
 					<View
 						style={{
-							flexDirection: 'row',
+							flexDirection: 'column',
 							alignItems: 'center',
-							justifyContent: 'center',
 						}}>
-						<ActivityIndicator size='large' color='#526b78' />
-						<Text style={{ color: '#f1f1f1' }}> Loanding...</Text>
-					</View>
-				</View>
-			)}
+						<View style={{ marginBottom: 20 }}>
+							<Card
+								color={cardToPlay !== null && cardToPlay.color}
+								value={cardToPlay !== null && cardToPlay.value}
+							/>
+						</View>
 
-			{Platform.OS === 'web' && displayWinner !== null && (
-				<View
-					style={[
-						{
-							width: width,
-							height: height,
-							position: 'absolute',
-							alignContent: 'center',
-							justifyContent: 'center',
-							backgroundColor: '#21212180',
-						},
-					]}>
-					<View
-						style={{
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'center',
-							flexWrap: 'wrap',
-						}}>
-						<Text
-							style={{
-								color: '#f1f1f1',
-								fontSize: 25,
-								fontWeight: 'bold',
-								textAlign: 'center',
-							}}>
-							{displayWinner} won the hand
-						</Text>
-					</View>
-				</View>
-			)}
+						<Button
+							icon={'times'}
+							text={'Cancel'}
+							firstColor={'#a72121'}
+							secondColor={'#f1f1f1'}
+							action={() => {
+								setOpen(false);
+								setCardToPlay(null);
+							}}
+						/>
+						<Button
+							icon={'check'}
+							text={'Confirm'}
+							firstColor={'#21b121'}
+							secondColor={'#f1f1f1'}
+							action={async () => {
+								const v = cardToPlay;
+								if (currentPlayer === user) {
+									let temp = cards;
+									const index = temp.indexOf(v);
+									if (index > -1) {
+										temp.splice(index, 1);
+									}
+									// setTempCards(temp);
 
-			{Platform.OS === 'web' &&
-				gameState === 'in game' &&
-				viewPontuations && (
-					<View
-						style={[
-							{
-								width: width,
-								height: height,
-								position: 'absolute',
-								alignContent: 'center',
-								justifyContent: 'center',
-								backgroundColor: '#21212180',
-							},
-						]}>
+									if (v.color === 'binary') {
+										setTempCard(v);
+										setOpen(false);
+										setCardToPlay(null);
+										setChoiceVisible(true);
+									} else {
+										setCurrentPlayer(null);
+										setOpen(false);
+										setCardToPlay(null);
+										await playCard(v, game);
+
+										// setCards(null);
+									}
+								}
+							}}
+						/>
+					</View>
+				}
+			/>
+
+			<Modal
+				visible={choiceVisible}
+				content={
+					<>
 						<View
 							style={{
-								flex: 1,
-								marginTop: 20,
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'center',
+								marginBottom: 20,
 							}}>
-							<View
-								style={[
-									styles.row,
-									{
-										justifyContent: 'space-around',
-										marginBottom: 50,
-									},
-								]}>
-								<View>
-									<Icon
-										name='list-alt'
-										color={'white'}
-										type='font-awesome'
-										size={30}
-										iconStyle={{ margin: 10 }}
-									/>
-									<Text
-										style={{
-											fontSize: 25,
-											fontWeight: 'bold',
-											color: '#f1f1f1',
-											marginHorizontal: 10,
-										}}>
-										Pontuations
-									</Text>
-								</View>
-								<TouchableOpacity
-									style={{
-										width: 80,
-										height: 40,
-										borderRadius: 100,
-										backgroundColor: '#c1c1c1',
-										justifyContent: 'center',
-										alignItems: 'center',
-									}}
-									onPress={() => {
-										setViewPontuations(false);
-									}}>
-									<Icon
-										name='times'
-										color={'white'}
-										type='font-awesome'
-										size={17}
-										iconStyle={{ margin: 10 }}
-									/>
-								</TouchableOpacity>
-							</View>
-
-							{pontuations &&
-								pontuations.map((pont, i) => {
-									return (
-										<View
-											style={[
-												styles.row,
-												{
-													justifyContent:
-														'space-around',
-												},
-											]}
-											key={i}>
-											<Text
-												style={{
-													fontSize: 15,
-													fontWeight: 'bold',
-													color: '#f1f1f1',
-													marginHorizontal: 5,
-												}}>
-												{pont.player.name}:{' '}
-											</Text>
-											<Text
-												style={{
-													backgroundColor: '#212121',
-													borderRadius: 20,
-													paddingHorizontal: 5,
-													color: '#f1f1f1',
-													fontWeight: 'bold',
-												}}>
-												{pont.points}
-											</Text>
-										</View>
+							<TouchableOpacity
+								style={{ marginHorizontal: 25 }}
+								onPress={async () => {
+									setCurrentPlayer(null);
+									setChoiceVisible(false);
+									await playCard(
+										{
+											color: tempCard.color,
+											value: 'f',
+											index: 58,
+										},
+										game
 									);
-								})}
+									setTempCard(null);
+									// setCards(null);
+								}}>
+								<Image
+									source={require('../../assets/cards/cards/f.png')}
+									style={{ width: 50, height: 50 }}
+									placeholderStyle={{
+										backgroundColor: 'transparent',
+									}}
+								/>
+							</TouchableOpacity>
+							<TouchableOpacity
+								style={{ marginHorizontal: 25 }}
+								onPress={async () => {
+									setCurrentPlayer(null);
+									setChoiceVisible(false);
+									await playCard(
+										{
+											color: tempCard.color,
+											value: 'p',
+											index: 58,
+										},
+										game
+									);
+									setTempCard(null);
+									// setCards(null);
+								}}>
+								<Image
+									source={require('../../assets/cards/cards/p.png')}
+									style={{ width: 50, height: 50 }}
+									placeholderStyle={{
+										backgroundColor: 'transparent',
+									}}
+								/>
+							</TouchableOpacity>
 						</View>
-					</View>
-				)}
-
-			{Platform.OS === 'web' && choiceVisible && (
-				<View
-					style={[
-						{
-							width: width,
-							height: height,
-							position: 'absolute',
-							alignContent: 'center',
-							justifyContent: 'center',
-							backgroundColor: '#21212180',
-						},
-					]}>
-					<View
-						style={{
-							flexDirection: 'row',
-							alignItems: 'center',
-							justifyContent: 'space-around',
-						}}>
-						<TouchableOpacity
-							onPress={async () => {
-								setCurrentPlayer(null);
-								setChoiceVisible(false);
-								await playCard(
-									{
-										color: tempCard.color,
-										value: 'f',
-										index: 58,
-									},
-									game
-								);
-								setTempCard(null);
-								// setCards(null);
+						<View
+							style={{
+								flexDirection: 'row',
+								alignItems: 'center',
+								justifyContent: 'space-around',
 							}}>
-							<Image
-								source={require('../../assets/cards/cards/f.png')}
-								style={{ width: 50, height: 50 }}
-								placeholderStyle={{
-									backgroundColor: 'transparent',
+							<Button
+								icon={'times'}
+								text={'Cancel'}
+								firstColor={'#a72121'}
+								secondColor={'#f1f1f1'}
+								action={() => {
+									setChoiceVisible(false);
 								}}
 							/>
-						</TouchableOpacity>
-						<TouchableOpacity
-							onPress={async () => {
-								setCurrentPlayer(null);
-								setChoiceVisible(false);
-								await playCard(
-									{
-										color: tempCard.color,
-										value: 'p',
-										index: 58,
-									},
-									game
-								);
-								setTempCard(null);
-								// setCards(null);
-							}}>
-							<Image
-								source={require('../../assets/cards/cards/p.png')}
-								style={{ width: 50, height: 50 }}
-								placeholderStyle={{
-									backgroundColor: 'transparent',
-								}}
-							/>
-						</TouchableOpacity>
-					</View>
-				</View>
-			)}
+						</View>
+					</>
+				}
+			/>
 		</SafeAreaView>
 	);
 }

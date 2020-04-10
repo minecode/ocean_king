@@ -22,7 +22,6 @@ import { setTestDeviceIDAsync } from 'expo-ads-admob';
 export default function ChatScreen(props) {
 	const [messages, setMessages] = useState(null);
 	const [message, setMessage] = useState('');
-	const [maxHeight, setMaxHeigt] = useState('90%');
 
 	const scrollModal = useRef(null);
 	const input = useRef(null);
@@ -55,7 +54,7 @@ export default function ChatScreen(props) {
 				animated: true,
 			});
 		}
-	}, [maxHeight, scrollModal]);
+	}, [scrollModal]);
 
 	async function sendMessage(room, user) {
 		await post('/game/message', {
@@ -123,7 +122,7 @@ export default function ChatScreen(props) {
 					marginVertical: 20,
 				}}>
 				<View>
-					<View style={{ height: '100%' }}>
+					<View style={{ height: '90%' }}>
 						<ScrollView
 							style={{ flexGrow: 0 }}
 							ref={scrollModal}

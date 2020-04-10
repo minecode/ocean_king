@@ -61,9 +61,14 @@ export default function Card(props) {
 	return (
 		<Image
 			source={cards[props.color]}
-			style={{ width: 75.9, height: 124.2 }}
+			style={{
+				width: 75.9,
+				height: 124.2,
+			}}
 			// style={{ width: 80, height: 130 }}
-			containerStyle={{ opacity: opacity }}
+			containerStyle={{
+				opacity: opacity,
+			}}
 			placeholderStyle={{ backgroundColor: 'transparent' }}>
 			{(props.color === 'red' ||
 				props.color === 'blue' ||

@@ -2,7 +2,7 @@ import { createStore, combineReducers } from 'redux';
 
 const INITIAL_STATE = {
 	socket: null,
-	room: null
+	room: null,
 };
 
 function socket(state = INITIAL_STATE, action) {
