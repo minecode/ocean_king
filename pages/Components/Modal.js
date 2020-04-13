@@ -7,7 +7,6 @@ if (Platform.OS !== 'web') {
 
 export default function Modal(props) {
 	const { height, width } = Dimensions.get('window');
-	console.log(props);
 	return (
 		<>
 			{Platform.OS !== 'web' && (

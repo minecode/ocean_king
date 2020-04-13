@@ -146,7 +146,7 @@ export default function HomeScreen(props) {
 					/>
 
 					<Button
-						text={'Settings'}
+						text={'Options'}
 						icon={'cogs'}
 						action={() => {
 							navigate('Settings');

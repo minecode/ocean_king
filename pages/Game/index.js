@@ -47,6 +47,8 @@ export default function GameScreen(props) {
 	const [newMessage, setNewMessage] = useState(false);
 	const [open, setOpen] = useState(false);
 	const [cardToPlay, setCardToPlay] = useState(null);
+	const [betOpen, setBetOpen] = useState(false);
+	const [bet, setBet] = useState(null);
 
 	const { navigate, reset } = props.navigation;
 
@@ -407,6 +409,8 @@ export default function GameScreen(props) {
 					maxBets={maxBets}
 					pontuations={pontuations}
 					placeBet={placeBet}
+					setBet={setBet}
+					setBetOpen={setBetOpen}
 				/>
 
 				<Game
@@ -449,6 +453,60 @@ export default function GameScreen(props) {
 					leaveGame={leaveGame}
 				/>
 			</ScrollView>
+
+			<Modal
+				visible={betOpen && bet !== null}
+				content={
+					<View
+						style={{
+							flexDirection: 'column',
+							alignItems: 'center',
+						}}>
+						<View style={{ marginBottom: 20 }}>
+							<View
+								style={{
+									backgroundColor: '#2177aa',
+									height: 40,
+									width: 80,
+									borderRadius: 20,
+									alignItems: 'center',
+									justifyContent: 'center',
+									margin: 5,
+								}}>
+								<Text
+									style={{
+										color: '#f1f1f1',
+										fontSize: 20,
+									}}>
+									{bet}
+								</Text>
+							</View>
+						</View>
+
+						<Button
+							icon={'times'}
+							text={'Cancel'}
+							firstColor={'#a72121'}
+							secondColor={'#f1f1f1'}
+							action={() => {
+								setBetOpen(false);
+								setBet(null);
+							}}
+						/>
+						<Button
+							icon={'check'}
+							text={'Confirm'}
+							firstColor={'#21b121'}
+							secondColor={'#f1f1f1'}
+							action={async () => {
+								setBetOpen(false);
+								setBet(null);
+								await placeBet(bet);
+							}}
+						/>
+					</View>
+				}
+			/>
 
 			<Modal
 				visible={open && cardToPlay !== null}

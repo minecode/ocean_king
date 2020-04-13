@@ -9,6 +9,8 @@ import CreditsScreen from './pages/Credits';
 import SettingsScreen from './pages/Settings';
 import PontuationsScreen from './pages/Pontuations';
 import ScoreboardsScreen from './pages/Scoreboards';
+import ProfileScreen from './pages/Profile';
+import RoundsScreen from './pages/Rounds';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 
@@ -80,7 +82,7 @@ function StackNavigator() {
 						backgroundColor: '#212121',
 					},
 					headerTitleStyle: { color: 'white' },
-					title: 'Settings',
+					title: 'Options',
 				}}
 			/>
 			<Stack.Screen
@@ -116,7 +118,29 @@ function StackNavigator() {
 						backgroundColor: '#212121',
 					},
 					headerTitleStyle: { color: 'white' },
-					title: 'Scores',
+					title: 'Pontuations',
+				}}
+			/>
+			<Stack.Screen
+				name='Profile'
+				component={ProfileScreen}
+				options={{
+					headerStyle: {
+						backgroundColor: '#212121',
+					},
+					headerTitleStyle: { color: 'white' },
+					title: 'Profile',
+				}}
+			/>
+			<Stack.Screen
+				name='Rounds'
+				component={RoundsScreen}
+				options={{
+					headerStyle: {
+						backgroundColor: '#212121',
+					},
+					headerTitleStyle: { color: 'white' },
+					title: 'Rounds',
 				}}
 			/>
 		</Stack.Navigator>

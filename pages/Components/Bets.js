@@ -4,6 +4,7 @@ import styles from '../../style';
 import Button from '../Components/Button';
 import ListCards from '../Components/ListCards';
 import Title from '../Components/Title';
+import Pontuations from '../Components/Pontuations';
 
 export default function Bets(props) {
 	const {
@@ -24,25 +25,37 @@ export default function Bets(props) {
 
 	if (gameState && gameState === 'place bets' && alreadyBet) {
 		return (
-			<View style={styles.container}>
-				<Title
-					title={'Waiting for other players...'}
-					style={{ fontSize: 25 }}
-				/>
-
-				<View
-					style={[
-						styles.row,
-						{
-							marginHorizontal: 0,
-							justifyContent: 'center',
-							marginBottom: 20,
-						},
-					]}>
+			<View
+				style={[
+					styles.container,
+					{
+						marginVertical: 0,
+						justifyContent: 'space-between',
+					},
+				]}>
+				<View style={[styles.row, { marginTop: 20 }]}>
+					<Text
+						style={{
+							fontSize: 25,
+							fontWeight: 'bold',
+							color: '#f1f1f1',
+							marginHorizontal: 10,
+						}}>
+						Round {maxBets}
+					</Text>
+					<Button
+						icon={'list'}
+						firstColor={'#21b121'}
+						secondColor={'#f1f1f1'}
+						action={() => {
+							navigate('Pontuations', {
+								pontuations: pontuations,
+							});
+						}}
+						small
+					/>
 					<Button
 						icon={'comments'}
-						firstColor={newMessage ? '#2177aa' : '#f1f1f1'}
-						secondColor={newMessage ? '#f1f1f1' : '#212121'}
 						action={() => {
 							setNewMessage(false);
 							navigate('Chat', {
@@ -51,6 +64,8 @@ export default function Bets(props) {
 								user: user,
 							});
 						}}
+						firstColor={newMessage ? '#2177aa' : '#f1f1f1'}
+						secondColor={newMessage ? '#f1f1f1' : '#212121'}
 						small
 					/>
 					<Button
@@ -63,6 +78,15 @@ export default function Bets(props) {
 						small
 					/>
 				</View>
+
+				<View>
+					<Pontuations pontuations={pontuations} />
+				</View>
+
+				<Title
+					title={'Waiting for other players...'}
+					style={{ fontSize: 25, marginTop: 20 }}
+				/>
 
 				<ListCards cards={cards} disabled />
 			</View>
@@ -123,6 +147,9 @@ export default function Bets(props) {
 					/>
 				</View>
 
+				<View>
+					<Pontuations pontuations={pontuations} />
+				</View>
 				<View style={[styles.row, { flexWrap: 'wrap' }]}>
 					{maxBets !== null &&
 						[...Array(maxBets + 1)].map((v, i) => {
@@ -139,7 +166,9 @@ export default function Bets(props) {
 										margin: 5,
 									}}
 									onPress={async () => {
-										await placeBet(i);
+										props.setBetOpen(true);
+										props.setBet(i);
+										// await placeBet(i);
 									}}>
 									<Text
 										style={{

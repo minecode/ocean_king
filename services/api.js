@@ -1,11 +1,11 @@
 import { create } from 'apisauce';
 
 const api = create({
-	baseURL: 'https://skull-king-game.herokuapp.com/'
-	// baseURL: 'http://192.168.1.68:3000/'
+	baseURL: 'https://skull-king-game.herokuapp.com/',
+	// baseURL: 'http://192.168.1.68:3000/',
 });
 
-api.addAsyncResponseTransform(async response => {
+api.addAsyncResponseTransform(async (response) => {
 	if (!response.ok) {
 		throw response;
 	}
@@ -15,13 +15,13 @@ async function post(endpoint, params) {
 	return await api
 		.post(endpoint, JSON.stringify(params), {
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				'Content-Type': 'application/json',
+			},
 		})
-		.then(response => {
+		.then((response) => {
 			return response;
 		})
-		.catch(error => {
+		.catch((error) => {
 			throw error;
 		});
 }
@@ -30,13 +30,13 @@ async function get(endpoint, params) {
 	return await api
 		.get(endpoint, params, {
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				'Content-Type': 'application/json',
+			},
 		})
-		.then(response => {
+		.then((response) => {
 			return response;
 		})
-		.catch(error => {
+		.catch((error) => {
 			throw error;
 		});
 }
@@ -45,13 +45,13 @@ async function put(endpoint, params) {
 	return await api
 		.put(endpoint, JSON.stringify(params), {
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				'Content-Type': 'application/json',
+			},
 		})
-		.then(response => {
+		.then((response) => {
 			return response;
 		})
-		.catch(error => {
+		.catch((error) => {
 			throw error;
 		});
 }
@@ -60,13 +60,13 @@ async function remove(endpoint, params) {
 	return await api
 		.delete(endpoint, JSON.stringify(params), {
 			headers: {
-				'Content-Type': 'application/json'
-			}
+				'Content-Type': 'application/json',
+			},
 		})
-		.then(response => {
+		.then((response) => {
 			return response;
 		})
-		.catch(error => {
+		.catch((error) => {
 			throw error;
 		});
 }

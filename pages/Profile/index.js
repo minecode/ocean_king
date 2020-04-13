@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from 'react-native-elements';
 import styles from '../../style';
 
-export default function RulesScreen(props) {
+export default function ProfileScreen(props) {
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
 			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>

@@ -47,6 +47,40 @@ export default function SettingsScreen(props) {
 							flexDirection: 'row',
 						}}
 						onPress={async () => {
+							navigate('Profile');
+						}}>
+						<Icon
+							name='user'
+							color={'white'}
+							type='font-awesome'
+							iconStyle={{ margin: 10 }}
+						/>
+						<Text
+							style={{
+								color: 'white',
+								margin: 5,
+								fontWeight: 'bold',
+							}}>
+							Profile
+						</Text>
+					</TouchableOpacity>
+				</View>
+				<View
+					style={[
+						styles.row,
+						{
+							marginHorizontal: 20,
+							marginVertical: 5,
+							justifyContent: 'flex-start',
+						},
+					]}>
+					<TouchableOpacity
+						style={{
+							alignItems: 'center',
+							justifyContent: 'center',
+							flexDirection: 'row',
+						}}
+						onPress={async () => {
 							navigate('Rules');
 						}}>
 						<Icon

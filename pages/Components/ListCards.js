@@ -18,28 +18,36 @@ export default function ListCards(props) {
 			props.currentPlayer === props.user
 		) {
 			let hasReturnTemp = false;
-			props.playedCardsState
-				.sort((a, b) => {
+			let tempPlayedCards = props.playedCardsState.sort((a, b) => {
+				if (a.createdAt !== undefined && b.createdAt !== undefined) {
 					if (a.createdAt < b.createdAt) {
 						return -1;
 					} else {
 						return 1;
 					}
-				})
-				.map((c, i) => {
-					if (!hasReturnTemp) {
-						if (
-							c.card[0].color === 'yellow' ||
-							c.card[0].color === 'red' ||
-							c.card[0].color === 'blue' ||
-							c.card[0].color === 'black'
-						) {
-							setHasRef(true);
-							setRef(c.card[0].color);
-							hasReturnTemp = true;
-						}
+				} else {
+					if (a.createdAt === undefined) {
+						return -1;
+					} else {
+						return 1;
 					}
-				});
+				}
+			});
+			tempPlayedCards.map((c, i) => {
+				if (!hasReturnTemp) {
+					if (
+						c.card[0].color === 'yellow' ||
+						c.card[0].color === 'red' ||
+						c.card[0].color === 'blue' ||
+						c.card[0].color === 'black'
+					) {
+						setHasRef(true);
+						setRef(c.card[0].color);
+						hasReturnTemp = true;
+						return;
+					}
+				}
+			});
 		} else {
 			setHasRef(false);
 			setRef(false);

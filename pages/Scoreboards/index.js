@@ -27,21 +27,48 @@ export default function ScoreboardsScreen(props) {
 	const [playersView, setPlayersView] = useState(null);
 
 	async function getScores(type) {
-		let url =
-			type === 'players'
-				? playersView
-					? type + '/' + playersView
-					: type + '/points'
-				: type;
-		await get('/game/scoreboards/' + url, {})
-			.then(async (response) => {
-				setLoading(false);
-				setScores(response.data);
-			})
-			.catch((error) => {
-				// console.log(error);
-				setLoading(false);
-			});
+		if (type === 'players') {
+			await get('/game/scoreboards/scores', {})
+				.then(async (response) => {
+					setLoading(false);
+					setScores(
+						response.data.sort((a, b) => {
+							if (playersView === 'points') {
+								return -(a.points - b.points);
+							} else if (playersView === 'wins') {
+								return -(a.wins - b.wins);
+							} else if (playersView === 'right_bets') {
+								return -(
+									a.right_bets / (a.games * 10) -
+									b.right_bets / (b.games * 10)
+								);
+							} else if (playersView === 'max_score') {
+								return -(a.max_score - b.max_score);
+							}
+						})
+					);
+				})
+				.catch((error) => {
+					// console.log(error);
+					setLoading(false);
+				});
+		} else {
+			let url =
+				type === 'players'
+					? playersView
+						? type + '/' + playersView
+						: type + '/points'
+					: type;
+			await get('/game/scoreboards/' + url, {})
+				.then(async (response) => {
+					setLoading(false);
+					setScores(response.data);
+				})
+				.catch((error) => {
+					// console.log(error);
+					setLoading(false);
+				});
+		}
 	}
 
 	useEffect(() => {
@@ -49,12 +76,6 @@ export default function ScoreboardsScreen(props) {
 			getScores(view);
 		}
 	}, [view]);
-
-	useEffect(() => {
-		if (playersView) {
-			getScores(view);
-		}
-	}, [playersView]);
 
 	async function onRefresh() {
 		getScores(view);
@@ -125,7 +146,7 @@ export default function ScoreboardsScreen(props) {
 										margin: 5,
 										fontWeight: 'bold',
 									}}>
-									Total points
+									Players
 								</Text>
 							</TouchableOpacity>
 							<TouchableOpacity
@@ -172,82 +193,205 @@ export default function ScoreboardsScreen(props) {
 							</TouchableOpacity>
 						</View>
 						{view === 'players' && (
-							<View
-								style={[
-									styles.row,
-									{
-										marginHorizontal: 0,
-										// marginTop: 20,
-										justifyContent:
-											Platform.OS === 'web'
-												? 'center'
-												: 'space-between',
-									},
-								]}>
-								<TouchableOpacity
-									style={{
-										height: 50,
-										width:
-											Platform.OS === 'web'
-												? 240
-												: (width - 45) / 2,
-										marginLeft:
-											Platform.OS === 'web' ? 0 : 15,
-										marginRight:
-											Platform.OS === 'web' ? 10 : null,
-										marginVertical: 10,
-										alignItems: 'center',
-										justifyContent: 'center',
-										flexDirection: 'row',
-									}}
-									onPress={async () => {
-										setPlayersView('points');
-									}}>
-									<Text
+							<View>
+								<View
+									style={[
+										styles.row,
+										{
+											marginHorizontal: 0,
+											// marginTop: 20,
+											justifyContent:
+												Platform.OS === 'web'
+													? 'center'
+													: 'space-between',
+										},
+									]}>
+									<TouchableOpacity
 										style={{
-											color: playersView
-												? playersView === 'wins'
-													? '#f1f1f130'
-													: '#f1f1f1'
-												: '#f1f1f1',
-											margin: 5,
-											fontWeight: 'bold',
+											height: 50,
+											width:
+												Platform.OS === 'web'
+													? 240
+													: (width - 45) / 2,
+											marginLeft:
+												Platform.OS === 'web' ? 0 : 15,
+											marginRight:
+												Platform.OS === 'web'
+													? 10
+													: null,
+											marginTop: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											flexDirection: 'row',
+										}}
+										onPress={async () => {
+											let new_scores = scores.sort(
+												(a, b) => {
+													return -(
+														a.points - b.points
+													);
+												}
+											);
+											setScores(new_scores);
+											setPlayersView('points');
 										}}>
-										Points
-									</Text>
-								</TouchableOpacity>
-								<TouchableOpacity
-									style={{
-										height: 50,
-										width:
-											Platform.OS === 'web'
-												? 240
-												: (width - 45) / 2,
-										marginLeft:
-											Platform.OS === 'web' ? 0 : 15,
-										marginRight:
-											Platform.OS === 'web' ? 10 : null,
-										marginVertical: 10,
-										alignItems: 'center',
-										justifyContent: 'center',
-										flexDirection: 'row',
-									}}
-									onPress={() => {
-										setPlayersView('wins');
-									}}>
-									<Text
+										<Text
+											style={{
+												color: playersView
+													? playersView === 'points'
+														? '#f1f1f1'
+														: '#f1f1f130'
+													: '#f1f1f1',
+												margin: 5,
+												fontWeight: 'bold',
+											}}>
+											Points
+										</Text>
+									</TouchableOpacity>
+									<TouchableOpacity
 										style={{
-											color: playersView
-												? playersView === 'wins'
-													? '#f1f1f1'
-													: '#f1f1f130'
-												: '#f1f1f130',
-											margin: 5,
-											fontWeight: 'bold',
+											height: 50,
+											width:
+												Platform.OS === 'web'
+													? 240
+													: (width - 45) / 2,
+											marginLeft:
+												Platform.OS === 'web' ? 0 : 15,
+											marginRight:
+												Platform.OS === 'web'
+													? 10
+													: null,
+											marginTop: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											flexDirection: 'row',
+										}}
+										onPress={() => {
+											let new_scores = scores.sort(
+												(a, b) => {
+													return -(a.wins - b.wins);
+												}
+											);
+											setScores(new_scores);
+											setPlayersView('wins');
 										}}>
-										Wins
-									</Text>
-								</TouchableOpacity>
+										<Text
+											style={{
+												color: playersView
+													? playersView === 'wins'
+														? '#f1f1f1'
+														: '#f1f1f130'
+													: '#f1f1f130',
+												margin: 5,
+												fontWeight: 'bold',
+											}}>
+											Wins
+										</Text>
+									</TouchableOpacity>
+								</View>
+								<View
+									style={[
+										styles.row,
+										{
+											marginHorizontal: 0,
+											// marginTop: 20,
+											justifyContent:
+												Platform.OS === 'web'
+													? 'center'
+													: 'space-between',
+										},
+									]}>
+									<TouchableOpacity
+										style={{
+											height: 50,
+											width:
+												Platform.OS === 'web'
+													? 240
+													: (width - 45) / 2,
+											marginLeft:
+												Platform.OS === 'web' ? 0 : 15,
+											marginRight:
+												Platform.OS === 'web'
+													? 10
+													: null,
+											marginBottom: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											flexDirection: 'row',
+										}}
+										onPress={async () => {
+											let new_scores = scores.sort(
+												(a, b) => {
+													return -(
+														a.right_bets /
+															(a.games * 10) -
+														b.right_bets /
+															(b.games * 10)
+													);
+												}
+											);
+											setScores(new_scores);
+											setPlayersView('right_bets');
+										}}>
+										<Text
+											style={{
+												color: playersView
+													? playersView ===
+													  'right_bets'
+														? '#f1f1f1'
+														: '#f1f1f130'
+													: '#f1f1f1',
+												margin: 5,
+												fontWeight: 'bold',
+											}}>
+											Right bets
+										</Text>
+									</TouchableOpacity>
+									<TouchableOpacity
+										style={{
+											height: 50,
+											width:
+												Platform.OS === 'web'
+													? 240
+													: (width - 45) / 2,
+											marginLeft:
+												Platform.OS === 'web' ? 0 : 15,
+											marginRight:
+												Platform.OS === 'web'
+													? 10
+													: null,
+											marginBottom: 10,
+											alignItems: 'center',
+											justifyContent: 'center',
+											flexDirection: 'row',
+										}}
+										onPress={() => {
+											let new_scores = scores.sort(
+												(a, b) => {
+													return -(
+														a.max_score -
+														b.max_score
+													);
+												}
+											);
+											setScores(new_scores);
+											setPlayersView('max_score');
+										}}>
+										<Text
+											style={{
+												color: playersView
+													? playersView ===
+													  'max_score'
+														? '#f1f1f1'
+														: '#f1f1f130'
+													: '#f1f1f130',
+												margin: 5,
+												fontWeight: 'bold',
+											}}>
+											Max scores
+										</Text>
+									</TouchableOpacity>
+								</View>
 							</View>
 						)}
 					</View>
@@ -311,7 +455,7 @@ export default function ScoreboardsScreen(props) {
 														? 18
 														: 15,
 											}}>
-											{score.name}
+											{score.player && score.player.name}
 										</Text>
 									</View>
 									<View
@@ -340,11 +484,22 @@ export default function ScoreboardsScreen(props) {
 														? 18
 														: 15,
 											}}>
-											{playersView
-												? playersView === 'points'
-													? score.points
-													: score.wins
-												: score.points}
+											{playersView &&
+												playersView === 'points' &&
+												score.points}
+											{playersView &&
+												playersView === 'wins' &&
+												score.wins}
+											{playersView &&
+												playersView === 'right_bets' &&
+												(
+													score.right_bets /
+													(score.games * 10)
+												).toFixed(2) + '%'}
+
+											{playersView &&
+												playersView === 'max_score' &&
+												score.max_score}
 										</Text>
 									</View>
 								</View>
@@ -366,59 +521,104 @@ export default function ScoreboardsScreen(props) {
 										backgroundColor: '#f1f1f110',
 									}}
 									key={i}>
-									<View style={[styles.row]}>
-										<Text
-											style={{
-												color: '#f1f1f1',
-												fontWeight: 'bold',
-												fontSize: 15,
-											}}>
-											{score &&
-												score.scores &&
-												score.scores[0] &&
-												score.scores[0].player &&
-												score.scores[0].player.name}
-										</Text>
-										<Text
-											style={{
-												color: '#f1f1f1',
-												fontWeight: 'bold',
-												fontSize: 15,
-											}}>
-											{score &&
-												score.scores &&
-												score.scores[0] &&
-												score.scores[0].player &&
-												score.scores[0].points}
-										</Text>
-									</View>
-									<View>
-										{score.scores &&
-											score.scores.map((p, j) => {
-												if (j !== 0) {
-													return (
-														<View
-															style={styles.row}
-															key={j}>
-															<Text
-																style={{
-																	color:
-																		'#f1f1f1',
-																}}>
-																{p.player.name}
-															</Text>
-															<Text
-																style={{
-																	color:
-																		'#f1f1f1',
-																}}>
-																{p.points}
-															</Text>
-														</View>
-													);
+									<TouchableOpacity
+										onPress={() => {
+											props.navigation.navigate(
+												'Rounds',
+												{
+													game: score._id,
 												}
-											})}
-									</View>
+											);
+										}}>
+										<View style={{ flexDirection: 'row' }}>
+											<View style={{ flex: 8 }}>
+												<View style={[styles.row]}>
+													<Text
+														style={{
+															color: '#f1f1f1',
+															fontWeight: 'bold',
+															fontSize: 15,
+														}}>
+														{score &&
+															score.scores &&
+															score.scores[0] &&
+															score.scores[0]
+																.player &&
+															score.scores[0]
+																.player.name}
+													</Text>
+													<Text
+														style={{
+															color: '#f1f1f1',
+															fontWeight: 'bold',
+															fontSize: 15,
+														}}>
+														{score &&
+															score.scores &&
+															score.scores[0] &&
+															score.scores[0]
+																.player &&
+															score.scores[0]
+																.points}
+													</Text>
+												</View>
+												<View>
+													{score.scores &&
+														score.scores.map(
+															(p, j) => {
+																if (j !== 0) {
+																	return (
+																		<View
+																			style={
+																				styles.row
+																			}
+																			key={
+																				j
+																			}>
+																			<Text
+																				style={{
+																					color:
+																						'#f1f1f1',
+																				}}>
+																				{
+																					p
+																						.player
+																						.name
+																				}
+																			</Text>
+																			<Text
+																				style={{
+																					color:
+																						'#f1f1f1',
+																				}}>
+																				{
+																					p.points
+																				}
+																			</Text>
+																		</View>
+																	);
+																}
+															}
+														)}
+												</View>
+											</View>
+											<View
+												style={{
+													flex: 1,
+													justifyContent: 'center',
+												}}>
+												<Icon
+													name='arrow-right'
+													color={'#f1f1f1'}
+													type='font-awesome'
+													size={18}
+													iconStyle={{
+														margin: 10,
+													}}
+												/>
+											</View>
+										</View>
+									</TouchableOpacity>
 								</View>
 							);
 						})}
