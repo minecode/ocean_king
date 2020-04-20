@@ -24,9 +24,10 @@ export default function ScoreboardsScreen(props) {
 	const [scores, setScores] = useState(null);
 	const [loading, setLoading] = useState(false);
 	const [view, setView] = useState('players');
-	const [playersView, setPlayersView] = useState(null);
+	const [playersView, setPlayersView] = useState('points');
 
 	async function getScores(type) {
+		setLoading(true);
 		if (type === 'players') {
 			await get('/game/scoreboards/scores', {})
 				.then(async (response) => {
@@ -405,14 +406,19 @@ export default function ScoreboardsScreen(props) {
 						scores &&
 						scores.map((score, i) => {
 							return (
-								<View
+								<TouchableOpacity
 									style={[
 										styles.row,
 										{
 											marginVertical: 5,
 										},
 									]}
-									key={i}>
+									key={i}
+									onPress={() => {
+										props.navigation.navigate('Profile', {
+											user: score.player._id,
+										});
+									}}>
 									<View
 										style={{
 											flexDirection: 'row',
@@ -431,7 +437,9 @@ export default function ScoreboardsScreen(props) {
 														: '#f1f1f1'
 												}
 												type='font-awesome'
-												iconStyle={{ marginRight: 10 }}
+												iconStyle={{
+													marginRight: 10,
+												}}
 											/>
 										)}
 										<Text
@@ -493,16 +501,17 @@ export default function ScoreboardsScreen(props) {
 											{playersView &&
 												playersView === 'right_bets' &&
 												(
-													score.right_bets /
-													(score.games * 10)
-												).toFixed(2) + '%'}
+													100 *
+													(score.right_bets /
+														(score.games * 10))
+												).toFixed(1) + '%'}
 
 											{playersView &&
 												playersView === 'max_score' &&
 												score.max_score}
 										</Text>
 									</View>
-								</View>
+								</TouchableOpacity>
 							);
 						})}
 				</View>

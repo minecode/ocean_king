@@ -15,12 +15,59 @@ import CreatedBy from '../Components/CreatedBy';
 
 import { getUser } from '../../utils';
 
+import { Notifications } from 'expo';
+import * as Permissions from 'expo-permissions';
+
 export default function HomeScreen(props) {
 	const [user, setUser] = useState(null);
 	const [username, setUsername] = useState(null);
 	const [error, setError] = useState(false);
+	const [notification, setNotfication] = useState(false);
+	const [token, setToken] = useState(null);
 
 	const { navigate, reset } = props.navigation;
+
+	const handleNotification = (notification) => {
+		// do whatever you want to do with the notification
+		console.log(notification);
+	};
+
+	const getNotificationAsync = async () => {
+		const { status } = await Permissions.askAsync(
+			Permissions.NOTIFICATIONS
+		);
+		// only asks if permissions have not already been determined, because
+		// iOS won't necessarily prompt the user a second time.
+		// On Android, permissions are granted on app installation, so
+		// `askAsync` will never prompt the user
+
+		// Stop here if the user did not grant permissions
+		if (status !== 'granted') {
+			alert('No notification permissions!');
+			return;
+		}
+
+		// Get the token that identifies this device
+		setToken(await Notifications.getExpoPushTokenAsync());
+	};
+
+	useEffect(() => {
+		if (token !== null && user !== null) {
+			post('/auth/pn/', {
+				user: user,
+				token: token,
+			})
+				.then((response) => {
+					setError(null);
+					setNotfication(true);
+				})
+				.catch((error) => {
+					setError(
+						'Ocorreu um erro. Por favor, tente novamente mais tarde.'
+					);
+				});
+		}
+	}, [token, user]);
 
 	async function getLocalUser() {
 		const { user, username } = await getUser(reset, true);
@@ -30,6 +77,10 @@ export default function HomeScreen(props) {
 
 	useEffect(() => {
 		getLocalUser();
+		getNotificationAsync();
+		const notificationSubscription = Notifications.addListener(
+			handleNotification
+		);
 	}, []);
 
 	useEffect(() => {

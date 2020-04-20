@@ -13,7 +13,7 @@ export default function Version(props) {
 				},
 			]}>
 			<Text style={{ color: '#a1a1a1' }}>
-				{Platform.OS === 'web' && 'web'} v20200413041105
+				{Platform.OS === 'web' && 'web'} v202004161426
 			</Text>
 		</View>
 	);

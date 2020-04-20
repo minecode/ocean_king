@@ -20,7 +20,7 @@ export default function Pontuations(props) {
 						type='font-awesome'
 						iconStyle={{ margin: 10 }}
 					/>
-					<Title title={'Pontuations'} />
+					<Title title={'Scores'} />
 				</View>
 				{props.pontuations.map((pont, i) => {
 					return (

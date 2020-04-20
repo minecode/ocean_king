@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, Text } from 'react-native';
+import {
+	SafeAreaView,
+	ScrollView,
+	View,
+	Text,
+	RefreshControl,
+	TouchableOpacity,
+} from 'react-native';
 import styles from '../../style';
 import { get } from '../../services/api';
 import { Icon } from 'react-native-elements';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import Card from '../Components/Card';
 import Modal from '../Components/Modal';
 
@@ -25,6 +31,7 @@ export default function RoundsScreen(props) {
 	}
 
 	async function getRounds() {
+		setLoading(true);
 		await get('/game/rounds', { game: props.route.params.game })
 			.then(async (response) => {
 				setLoading(false);
@@ -36,9 +43,20 @@ export default function RoundsScreen(props) {
 			});
 	}
 
+	async function onRefresh() {
+		getRounds();
+	}
+
 	return (
 		<SafeAreaView style={{ flex: 1, backgroundColor: '#212121' }}>
-			<ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+			<ScrollView
+				contentContainerStyle={{ flexGrow: 1 }}
+				refreshControl={
+					<RefreshControl
+						refreshing={loading}
+						onRefresh={onRefresh}
+					/>
+				}>
 				<View
 					style={{
 						marginVertical: 20,
@@ -73,7 +91,7 @@ export default function RoundsScreen(props) {
 													styles.row,
 													{
 														backgroundColor:
-															'#f1f1f180',
+															'#f1f1f120',
 														paddingVertical: 5,
 														paddingHorizontal: 10,
 														borderRadius: 20,
@@ -114,7 +132,7 @@ export default function RoundsScreen(props) {
 													</Text>
 												</View>
 												<Icon
-													name='eye'
+													name='plus'
 													color={'white'}
 													type='font-awesome'
 													size={15}
@@ -142,6 +160,7 @@ export default function RoundsScreen(props) {
 							style={{
 								flexDirection: 'row',
 								justifyContent: 'flex-end',
+								marginHorizontal: 20,
 							}}>
 							<TouchableOpacity
 								style={{

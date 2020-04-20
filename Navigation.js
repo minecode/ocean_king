@@ -118,7 +118,7 @@ function StackNavigator() {
 						backgroundColor: '#212121',
 					},
 					headerTitleStyle: { color: 'white' },
-					title: 'Pontuations',
+					title: 'Scores',
 				}}
 			/>
 			<Stack.Screen
