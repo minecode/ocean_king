@@ -1,11 +1,11 @@
 {
   "files": {
-    "app.js": "/ocean_king/static/js/app.a3cbe267.chunk.js",
-    "app.js.map": "/ocean_king/static/js/app.a3cbe267.chunk.js.map",
+    "app.js": "/ocean_king/static/js/app.77359084.chunk.js",
+    "app.js.map": "/ocean_king/static/js/app.77359084.chunk.js.map",
     "runtime~app.js": "/ocean_king/static/js/runtime~app.badda1c9.js",
     "runtime~app.js.map": "/ocean_king/static/js/runtime~app.badda1c9.js.map",
-    "static/js/2.baa0256b.chunk.js": "/ocean_king/static/js/2.baa0256b.chunk.js",
-    "static/js/2.baa0256b.chunk.js.map": "/ocean_king/static/js/2.baa0256b.chunk.js.map",
+    "static/js/2.e9ee59c3.chunk.js": "/ocean_king/static/js/2.e9ee59c3.chunk.js",
+    "static/js/2.e9ee59c3.chunk.js.map": "/ocean_king/static/js/2.e9ee59c3.chunk.js.map",
     "fonts/AntDesign.ttf": "/ocean_king/./fonts/AntDesign.ttf",
     "fonts/Entypo.ttf": "/ocean_king/./fonts/Entypo.ttf",
     "fonts/Feather.ttf": "/ocean_king/./fonts/Feather.ttf",
@@ -57,7 +57,7 @@
   },
   "entrypoints": [
     "static/js/runtime~app.badda1c9.js",
-    "static/js/2.baa0256b.chunk.js",
-    "static/js/app.a3cbe267.chunk.js"
+    "static/js/2.e9ee59c3.chunk.js",
+    "static/js/app.77359084.chunk.js"
   ]
 }
