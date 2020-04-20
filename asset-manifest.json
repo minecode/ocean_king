@@ -1,7 +1,7 @@
 {
   "files": {
-    "app.js": "/ocean_king/static/js/app.a8379d78.chunk.js",
-    "app.js.map": "/ocean_king/static/js/app.a8379d78.chunk.js.map",
+    "app.js": "/ocean_king/static/js/app.50a981e3.chunk.js",
+    "app.js.map": "/ocean_king/static/js/app.50a981e3.chunk.js.map",
     "runtime~app.js": "/ocean_king/static/js/runtime~app.badda1c9.js",
     "runtime~app.js.map": "/ocean_king/static/js/runtime~app.badda1c9.js.map",
     "static/js/2.e9ee59c3.chunk.js": "/ocean_king/static/js/2.e9ee59c3.chunk.js",
@@ -58,6 +58,6 @@
   "entrypoints": [
     "static/js/runtime~app.badda1c9.js",
     "static/js/2.e9ee59c3.chunk.js",
-    "static/js/app.a8379d78.chunk.js"
+    "static/js/app.50a981e3.chunk.js"
   ]
 }
