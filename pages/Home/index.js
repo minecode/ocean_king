@@ -43,7 +43,7 @@ export default function HomeScreen(props) {
 
 		// Stop here if the user did not grant permissions
 		if (status !== 'granted') {
-			alert('No notification permissions!');
+			// alert('No notification permissions!');
 			return;
 		}
 
@@ -152,7 +152,8 @@ export default function HomeScreen(props) {
 									? 'center'
 									: 'space-between',
 						},
-					]}>
+					]}
+				>
 					<Button
 						text={'New game'}
 						icon={'gamepad'}
@@ -185,7 +186,8 @@ export default function HomeScreen(props) {
 									? 'center'
 									: 'space-between',
 						},
-					]}>
+					]}
+				>
 					<Button
 						text={'Scoreboards'}
 						icon={'list'}
