@@ -71,6 +71,41 @@ export default function SettingsScreen(props) {
 						{
 							marginHorizontal: 20,
 							marginVertical: 5,
+							marginTop: 20,
+							justifyContent: 'flex-start',
+						},
+					]}>
+					<TouchableOpacity
+						style={{
+							alignItems: 'center',
+							justifyContent: 'center',
+							flexDirection: 'row',
+						}}
+						onPress={async () => {
+							navigate('Friends');
+						}}>
+						<Icon
+							name='users'
+							color={'white'}
+							type='font-awesome'
+							iconStyle={{ margin: 10 }}
+						/>
+						<Text
+							style={{
+								color: 'white',
+								margin: 5,
+								fontWeight: 'bold',
+							}}>
+							Friends
+						</Text>
+					</TouchableOpacity>
+				</View>
+				<View
+					style={[
+						styles.row,
+						{
+							marginHorizontal: 20,
+							marginVertical: 5,
 							justifyContent: 'flex-start',
 						},
 					]}>

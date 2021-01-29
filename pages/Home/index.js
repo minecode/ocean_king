@@ -24,6 +24,7 @@ export default function HomeScreen(props) {
 	const [error, setError] = useState(false);
 	const [notification, setNotfication] = useState(false);
 	const [token, setToken] = useState(null);
+	const [loading, setLoading] = useState(false);
 
 	const { navigate, reset } = props.navigation;
 
@@ -104,13 +105,15 @@ export default function HomeScreen(props) {
 					});
 				}
 			})
-			.catch((error) => {});
+			.catch((error) => { });
 	}
 
 	async function newGame() {
+		setLoading(true);
 		if (user) {
 			await post('/game', { user: user })
 				.then(async (response) => {
+					setLoading(false);
 					reset({
 						index: 1,
 						routes: [
@@ -122,11 +125,13 @@ export default function HomeScreen(props) {
 					});
 				})
 				.catch((error) => {
+					setLoading(false);
 					console.log(error);
 				});
 		} else {
 			setError('Please, logout and try again');
 		}
+		setLoading(false);
 	}
 
 	return (

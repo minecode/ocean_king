@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import styles from '../../style';
 import Button from '../Components/Button';
@@ -35,6 +35,9 @@ export default function Game(props) {
 		cardToPlay,
 		setCardToPlay,
 	} = props;
+
+
+
 
 	if (gameState && gameState === 'in game') {
 		return (

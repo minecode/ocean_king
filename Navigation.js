@@ -6,6 +6,7 @@ import JoinScreen from './pages/Join';
 import ChatScreen from './pages/Chat';
 import RulesScreen from './pages/Rules';
 import CreditsScreen from './pages/Credits';
+import FriendsScreen from './pages/Friends';
 import SettingsScreen from './pages/Settings';
 import PontuationsScreen from './pages/Pontuations';
 import ScoreboardsScreen from './pages/Scoreboards';
@@ -130,6 +131,17 @@ function StackNavigator() {
 					},
 					headerTitleStyle: { color: 'white' },
 					title: 'Profile',
+				}}
+			/>
+			<Stack.Screen
+				name='Friends'
+				component={FriendsScreen}
+				options={{
+					headerStyle: {
+						backgroundColor: '#212121',
+					},
+					headerTitleStyle: { color: 'white' },
+					title: 'Friends',
 				}}
 			/>
 			<Stack.Screen
