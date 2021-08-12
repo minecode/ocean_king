@@ -1,35 +1,40 @@
 {
-	"expo": {
-		"name": "Ocean King",
-		"slug": "ocean_king",
-		"privacy": "public",
-		"sdkVersion": "36.0.0",
-		"platforms": ["ios", "android", "web"],
-		"version": "4.0.0",
-		"orientation": "portrait",
-		"icon": "./assets/ocean_king_logo.png",
-		"splash": {
-			"image": "./assets/ocean_king.png",
-			"resizeMode": "contain",
-			"backgroundColor": "#212121"
-		},
-		"updates": {
-			"fallbackToCacheTimeout": 0
-		},
-		"assetBundlePatterns": ["**/*"],
-		"ios": {
-			"supportsTablet": true
-		},
-		"android": {
-			"package": "pt.fhenriques.ocean_king",
-			"versionCode": 4,
-			"googleServicesFile": "./google-services.json",
-			"config": {
-				"googleMobileAdsAppId": "${GOOGLE_MOBILE_ADS_APP_ID}",
-				"googleSignIn": {
-					"apiKey": "${GOOGLE_SIGN_IN_API_KEY}"
-				}
-			}
-		}
-	}
+  "expo": {
+    "name": "Ocean King",
+    "slug": "ocean_king",
+    "privacy": "public",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "version": "4.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/ocean_king_logo.png",
+    "splash": {
+      "image": "./assets/ocean_king.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#212121"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "pt.fhenriques.ocean_king",
+      "versionCode": 4,
+      "googleServicesFile": "./google-services.json",
+      "config": {
+        "googleMobileAdsAppId": "${GOOGLE_MOBILE_ADS_APP_ID}",
+        "googleSignIn": {
+          "apiKey": "${GOOGLE_SIGN_IN_API_KEY}"
+        }
+      }
+    }
+  }
 }

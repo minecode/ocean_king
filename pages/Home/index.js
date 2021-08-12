@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Platform } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Platform, Text } from 'react-native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from '../../style';
@@ -15,51 +15,38 @@ import CreatedBy from '../Components/CreatedBy';
 
 import { getUser } from '../../utils';
 
-import { Notifications } from 'expo';
-import * as Permissions from 'expo-permissions';
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+	handleNotification: async () => ({
+	  shouldShowAlert: true,
+	  shouldPlaySound: false,
+	  shouldSetBadge: false,
+	}),
+  });
+  
 
 export default function HomeScreen(props) {
 	const [user, setUser] = useState(null);
 	const [username, setUsername] = useState(null);
 	const [error, setError] = useState(false);
 	const [notification, setNotfication] = useState(false);
-	const [token, setToken] = useState(null);
+	const [expoPushToken, setExpoPushToken] = useState('');
+
+	const notificationListener = useRef();
+	const responseListener = useRef();
 
 	const { navigate, reset } = props.navigation;
 
-	const handleNotification = (notification) => {
-		// do whatever you want to do with the notification
-		console.log(notification);
-	};
-
-	const getNotificationAsync = async () => {
-		const { status } = await Permissions.askAsync(
-			Permissions.NOTIFICATIONS
-		);
-		// only asks if permissions have not already been determined, because
-		// iOS won't necessarily prompt the user a second time.
-		// On Android, permissions are granted on app installation, so
-		// `askAsync` will never prompt the user
-
-		// Stop here if the user did not grant permissions
-		if (status !== 'granted') {
-			// alert('No notification permissions!');
-			return;
-		}
-
-		// Get the token that identifies this device
-		setToken(await Notifications.getExpoPushTokenAsync());
-	};
-
 	useEffect(() => {
-		if (token !== null && user !== null) {
+		if (expoPushToken !== null && user !== null) {
 			post('/auth/pn/', {
 				user: user,
-				token: token,
+				token: expoPushToken,
 			})
 				.then((response) => {
 					setError(null);
-					setNotfication(true);
 				})
 				.catch((error) => {
 					setError(
@@ -67,7 +54,7 @@ export default function HomeScreen(props) {
 					);
 				});
 		}
-	}, [token, user]);
+	}, [expoPushToken, user]);
 
 	async function getLocalUser() {
 		const { user, username } = await getUser(reset, true);
@@ -77,10 +64,21 @@ export default function HomeScreen(props) {
 
 	useEffect(() => {
 		getLocalUser();
-		getNotificationAsync();
-		const notificationSubscription = Notifications.addListener(
-			handleNotification
-		);
+
+		registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+	
+		notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+		  setNotfication(notification);
+		});
+	
+		responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+		//   console.log(response);
+		});
+	
+		return () => {
+		  Notifications.removeNotificationSubscription(notificationListener.current);
+		  Notifications.removeNotificationSubscription(responseListener.current);
+		};
 	}, []);
 
 	useEffect(() => {
@@ -215,4 +213,34 @@ export default function HomeScreen(props) {
 			<Version />
 		</SafeAreaView>
 	);
+}
+
+async function registerForPushNotificationsAsync() {
+    let token;
+	if (Constants.isDevice) {
+		const { status: existingStatus } = await Notifications.getPermissionsAsync();
+		let finalStatus = existingStatus;
+		if (existingStatus !== 'granted') {
+		const { status } = await Notifications.requestPermissionsAsync();
+		finalStatus = status;
+		}
+		if (finalStatus !== 'granted') {
+		alert('Failed to get push token for push notification!');
+		return;
+		}
+		token = (await Notifications.getExpoPushTokenAsync()).data;
+	} else {
+		alert('Must use physical device for Push Notifications');
+	}
+
+	if (Platform.OS === 'android') {
+		Notifications.setNotificationChannelAsync('default', {
+		name: 'default',
+		importance: Notifications.AndroidImportance.MAX,
+		vibrationPattern: [0, 250, 250, 250],
+		lightColor: '#FF231F7C',
+		});
+	}
+
+	return token;
 }

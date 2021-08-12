@@ -11,18 +11,21 @@ import PontuationsScreen from './pages/Pontuations';
 import ScoreboardsScreen from './pages/Scoreboards';
 import ProfileScreen from './pages/Profile';
 import RoundsScreen from './pages/Rounds';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import { createStackNavigator, TransitionSpecs, CardStyleInterpolators, HeaderStyleInterpolators, TransitionPresets } from '@react-navigation/stack';
 
 const Stack = createStackNavigator();
 
-function StackNavigator() {
+const config = TransitionSpecs.FadeOutToBottomAndroidSpec;
+
+export default function StackNavigator() {
 	return (
 		<Stack.Navigator
 			initialRouteName='Login'
 			screenOptions={{
 				headerTintColor: 'white',
-			}}>
+				...TransitionPresets.RevealFromBottomAndroid,
+			}}
+			>
 			<Stack.Screen
 				name='Login'
 				component={LoginScreen}
@@ -109,6 +112,7 @@ function StackNavigator() {
 				options={{
 					headerShown: false,
 				}}
+				
 			/>
 			<Stack.Screen
 				name='Pontuations'
@@ -147,4 +151,3 @@ function StackNavigator() {
 	);
 }
 
-export default StackNavigator;
